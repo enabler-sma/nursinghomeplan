@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Nursing Home Evaluation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#0F6E56;--teal-mid:#1D9E75;--teal-light:#E1F5EE;--teal-dark:#085041;
+  --amber:#BA7517;--amber-light:#FAEEDA;--amber-mid:#EF9F27;
+  --red:#A32D2D;--red-light:#FCEBEB;--red-mid:#E24B4A;
+  --green:#3B6D11;--green-light:#EAF3DE;--green-mid:#639922;
+  --gray:#444441;--gray-light:#F1EFE8;--gray-mid:#888780;--gray-border:#D3D1C7;
+  --text:#2C2C2A;--text-muted:#5F5E5A;--bg:#FAFAF8;--white:#fff;
+  --r:12px;--rs:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.6;min-height:100vh;padding-bottom:60px}
+
+/* ── HEADER ── */
+header{background:var(--teal);color:#fff;padding:18px 20px 14px;position:sticky;top:0;z-index:200}
+header h1{font-family:'DM Serif Display',serif;font-size:21px;font-weight:400;letter-spacing:-0.3px;margin-bottom:2px}
+header .sub{font-size:12px;opacity:.75;margin-bottom:12px}
+
+/* stat pills row */
+.stat-row{display:flex;gap:8px;flex-wrap:wrap}
+.stat-pill{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:100px;font-size:12px;font-weight:600;border:1.5px solid transparent}
+.pill-mandatory{background:rgba(226,75,74,.18);border-color:rgba(226,75,74,.4);color:#ffd5d5}
+.pill-mandatory.done{background:rgba(159,225,203,.18);border-color:rgba(159,225,203,.4);color:#9FE1CB}
+.pill-important{background:rgba(239,159,39,.18);border-color:rgba(239,159,39,.4);color:#fac775}
+.pill-important.done{background:rgba(159,225,203,.18);border-color:rgba(159,225,203,.4);color:#9FE1CB}
+.pill-total{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.9)}
+
+/* progress bar */
+.prog-wrap{margin-top:10px}
+.prog-bar{height:4px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#9FE1CB;border-radius:2px;transition:width .4s ease;width:0%}
+.prog-label{font-size:11px;opacity:.65;margin-top:4px}
+
+/* ── FILTER BAR ── */
+.filter-bar{background:var(--white);border-bottom:1px solid var(--gray-border);padding:10px 16px;display:flex;gap:8px;align-items:center;position:sticky;top:101px;z-index:190;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.filter-btn{white-space:nowrap;padding:7px 14px;border-radius:100px;border:1.5px solid var(--gray-border);background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all .15s;flex-shrink:0}
+.filter-btn.active-all{background:var(--teal);border-color:var(--teal);color:#fff}
+.filter-btn.active-mandatory{background:var(--red-light);border-color:var(--red-mid);color:var(--red)}
+.filter-btn.active-important{background:var(--amber-light);border-color:var(--amber-mid);color:var(--amber)}
+.filter-bar .save-btn-sm{margin-left:auto;flex-shrink:0;padding:7px 14px;border-radius:100px;border:1.5px solid var(--teal-mid);background:var(--teal-light);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--teal);cursor:pointer}
+
+/* ── CONTAINER ── */
+.container{max-width:680px;margin:0 auto;padding:0 14px}
+
+/* ── META SECTION ── */
+.meta-card{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--r);padding:18px;margin:16px 0 12px}
+.meta-card h2{font-family:'DM Serif Display',serif;font-size:17px;font-weight:400;color:var(--teal);margin-bottom:14px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-row{margin-bottom:12px}
+label.fl{display:block;font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+input[type=text],input[type=date],input[type=email],input[type=number],textarea,select{width:100%;padding:11px 13px;border:1.5px solid var(--gray-border);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:var(--white);appearance:none;-webkit-appearance:none;outline:none;transition:border-color .2s}
+input:focus,textarea:focus,select:focus{border-color:var(--teal-mid);box-shadow:0 0 0 3px rgba(29,158,117,.1)}
+textarea{min-height:72px;resize:vertical}
+
+/* ── SECTION CARDS ── */
+.sec-card{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.sec-header{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;width:100%;background:none;border:none;text-align:left;transition:background .15s}
+.sec-header:active{background:var(--gray-light)}
+.sec-icon{width:34px;height:34px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.sec-title-wrap{flex:1;min-width:0}
+.sec-title{font-weight:600;font-size:14px;color:var(--text);display:block}
+.sec-meta{font-size:11px;color:var(--text-muted);margin-top:2px;display:flex;gap:6px;flex-wrap:wrap}
+.sec-badge{padding:2px 7px;border-radius:100px;font-size:10px;font-weight:600}
+.badge-m{background:var(--red-light);color:var(--red)}
+.badge-i{background:var(--amber-light);color:var(--amber)}
+.chevron{font-size:18px;color:var(--gray-mid);transition:transform .25s;flex-shrink:0}
+.sec-header.open .chevron{transform:rotate(180deg)}
+.sec-body{display:none;padding:2px 16px 16px;border-top:1px solid var(--gray-light)}
+.sec-body.open{display:block}
+
+/* ── CHECK ITEMS ── */
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0ede8}
+.check-item:last-of-type{border-bottom:none}
+.check-item.hidden{display:none}
+input[type=checkbox]{width:22px;height:22px;border:2px solid var(--gray-border);border-radius:6px;appearance:none;-webkit-appearance:none;background:var(--white);flex-shrink:0;margin-top:1px;cursor:pointer;position:relative;transition:all .15s}
+input[type=checkbox]:checked{background:var(--teal-mid);border-color:var(--teal-mid)}
+input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2px;width:7px;height:11px;border:2.5px solid #fff;border-top:none;border-left:none;transform:rotate(45deg)}
+.check-label-wrap{flex:1;display:flex;flex-direction:column;gap:3px}
+.check-label{font-size:14px;color:var(--text);line-height:1.45;cursor:pointer}
+.priority-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:100px;width:fit-content}
+.tag-mandatory{background:var(--red-light);color:var(--red)}
+.tag-important{background:var(--amber-light);color:var(--amber)}
+
+/* inline answer field */
+.answer-field{margin-top:5px}
+.answer-field input[type=text]{padding:8px 11px;font-size:14px}
+
+.notes-field{margin-top:12px}
+.notes-field label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+
+/* ── GUT FEELING ── */
+.gut-card{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--r);padding:18px;margin-bottom:10px}
+.gut-card h2{font-family:'DM Serif Display',serif;font-size:17px;font-weight:400;color:var(--teal);margin-bottom:14px}
+.gut-q{margin-bottom:18px}
+.gut-q p{font-size:14px;font-weight:600;margin-bottom:8px}
+.btn-row{display:flex;gap:7px;flex-wrap:wrap}
+.sel-btn{padding:8px 14px;border:1.5px solid var(--gray-border);border-radius:100px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all .15s}
+.sel-btn:active{transform:scale(.97)}
+.sel-btn.s-teal{background:var(--teal-light);border-color:var(--teal-mid);color:var(--teal)}
+.sel-btn.s-green{background:var(--green-light);border-color:var(--green-mid);color:var(--green)}
+.sel-btn.s-amber{background:var(--amber-light);border-color:var(--amber-mid);color:var(--amber)}
+.sel-btn.s-red{background:var(--red-light);border-color:var(--red-mid);color:var(--red)}
+.yn-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.yn-btn{padding:10px 8px;border:1.5px solid var(--gray-border);border-radius:var(--rs);background:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;text-align:center;transition:all .15s}
+.redflag-row{display:flex;align-items:center;gap:12px}
+.redflag-row span{font-size:14px;color:var(--text-muted)}
+.redflag-row input{width:70px;text-align:center;padding:9px}
+
+/* ── SAVE / LOAD / SUBMIT ── */
+.action-card{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--r);padding:18px;margin-bottom:10px}
+.action-card h2{font-family:'DM Serif Display',serif;font-size:17px;font-weight:400;color:var(--teal);margin-bottom:4px}
+.action-card .desc{font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.5}
+.big-btn{display:block;width:100%;padding:14px;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;border:none;margin-bottom:9px}
+.btn-primary{background:var(--teal);color:#fff}
+.btn-primary:active{opacity:.85}
+.btn-outline-teal{background:var(--white);color:var(--teal);border:1.5px solid var(--teal-mid) !important}
+.btn-outline-amber{background:var(--white);color:var(--amber);border:1.5px solid var(--amber-mid) !important}
+.btn-outline-red{background:var(--white);color:var(--red);border:1.5px solid var(--red-mid) !important}
+.divider{text-align:center;font-size:12px;color:var(--gray-mid);margin:6px 0}
+.tip{background:var(--teal-light);border-left:3px solid var(--teal-mid);border-radius:0 var(--rs) var(--rs) 0;padding:10px 13px;font-size:13px;color:var(--teal);margin-top:10px;line-height:1.5}
+.warn{background:var(--amber-light);border-left:3px solid var(--amber-mid);border-radius:0 var(--rs) var(--rs) 0;padding:10px 13px;font-size:13px;color:var(--amber);margin-top:10px;line-height:1.5}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal-dark);color:#fff;padding:11px 20px;border-radius:100px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:all .3s;z-index:999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── SAVE SLOTS MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex}
+.modal{background:var(--white);border-radius:var(--r);padding:20px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto}
+.modal h3{font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;color:var(--teal);margin-bottom:14px}
+.slot-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--gray-border);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;transition:background .15s}
+.slot-item:hover{background:var(--gray-light)}
+.slot-info{flex:1;min-width:0}
+.slot-name{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot-date{font-size:12px;color:var(--text-muted);margin-top:2px}
+.slot-del{background:none;border:none;cursor:pointer;color:var(--red-mid);font-size:20px;padding:4px;flex-shrink:0}
+.modal-close{display:block;width:100%;padding:12px;border:1.5px solid var(--gray-border);border-radius:var(--rs);background:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:var(--text-muted);cursor:pointer;margin-top:4px}
+.empty-slots{text-align:center;padding:24px;color:var(--text-muted);font-size:14px}
+
+/* ── BACK TO TOP ── */
+#backToTop{position:fixed;bottom:24px;right:16px;width:44px;height:44px;border-radius:100px;background:var(--teal);color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:300;transform:translateY(8px)}
+#backToTop.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+.answer-field{margin-top:7px}
+.answer-field input[type=text]{padding:9px 12px;font-size:14px}
+.answer-field textarea{min-height:60px;font-size:14px;padding:9px 12px}
+.yn-answer{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+.yn-answer button{padding:8px 18px;border-radius:100px;border:1.5px solid var(--gray-border);background:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all .15s;flex-shrink:0}
+.yn-answer button.ans-yes{background:var(--teal-light);border-color:var(--teal-mid);color:var(--teal)}
+.yn-answer button.ans-no{background:var(--red-light);border-color:var(--red-mid);color:var(--red)}
+.yn-answer button.ans-cond{background:var(--amber-light);border-color:var(--amber-mid);color:var(--amber)}
+.cond-remark{margin-top:6px;display:none}
+.cond-remark.show{display:block}
+
+@media(max-width:400px){
+  .two-col{grid-template-columns:1fr}
+  header h1{font-size:18px}
+  .stat-row{gap:6px}
+  .stat-pill{font-size:11px;padding:4px 9px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <h1>🏥 Nursing Home Evaluation</h1>
+    <p class="sub">Singapore Edition · v2</p>
+    <div class="stat-row">
+      <div class="stat-pill pill-mandatory" id="pillM">🔴 — mandatory left</div>
+      <div class="stat-pill pill-important" id="pillI">🟡 — important left</div>
+      <div class="stat-pill pill-total" id="pillT">— / — total</div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+      <div class="prog-label" id="progLabel">0 of 0 items checked</div>
+    </div>
+  </div>
+</header>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <button class="filter-btn active-all" id="fAll" onclick="setFilter('all')">All items</button>
+  <button class="filter-btn" id="fMand" onclick="setFilter('mandatory')">🔴 Mandatory</button>
+  <button class="filter-btn" id="fImp" onclick="setFilter('important')">🟡 Important</button>
+  <button class="save-btn-sm" onclick="quickSave()">💾 Save</button>
+</div>
+
+<div class="container">
+
+<!-- VISIT DETAILS -->
+<div class="meta-card">
+  <h2>Visit Details</h2>
+  <div class="two-col">
+    <div class="field-row"><label class="fl">Visit Date</label><input type="date" id="visitDate"></div>
+    <div class="field-row"><label class="fl">Your Name</label><input type="text" id="visitorName" placeholder="e.g. Sarah Tan"></div>
+  </div>
+  <div class="field-row"><label class="fl">Facility Name</label><input type="text" id="facilityName" placeholder="e.g. St Joseph's Home"></div>
+  <div class="field-row"><label class="fl">Address / Area</label><input type="text" id="facilityAddr" placeholder="e.g. Jurong West"></div>
+  <div class="field-row"><label class="fl">Resident / Patient Name (optional)</label><input type="text" id="patientName" placeholder="For whom is this evaluation?"></div>
+</div>
+
+<!-- ════════════════ SECTIONS ════════════════ -->
+
+<!-- S1 Admission -->
+<div class="sec-card" data-sec="1">
+<button class="sec-header" onclick="toggleSec(this)">
+  <div class="sec-icon">📋</div>
+  <div class="sec-title-wrap">
+    <span class="sec-title">1. Admission, Logistics &amp; Finance</span>
+    <span class="sec-meta"><span class="sec-badge badge-m" id="sm1">— mandatory</span><span class="sec-badge badge-i" id="si1">— important</span></span>
+  </div>
+  <span class="chevron">⌄</span>
+</button>
+<div class="sec-body" id="sb1">
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c1_1" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_1">Same-day admission available for emergencies?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c1_1','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c1_1','No')">No</button>
+        <button onclick="ansYN(this,'c1_1','With conditions')">With conditions</button>
+      </div>
+      <div class="cond-remark" id="r_c1_1"><input type="text" placeholder="Describe conditions…" oninput="autoTick('c1_1',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c1_2" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_2">Longest length of stay allowed for respite care?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="answer-field"><input type="text" placeholder="e.g. 3 months" oninput="autoTick('c1_2',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c1_3" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_3">Turnaround time for temporary and long-term admission?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="answer-field"><input type="text" placeholder="e.g. 2–3 days temp, 2 weeks long-term" oninput="autoTick('c1_3',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c1_4" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_4">Accepts patients below age 65 (e.g. age 45)?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c1_4','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c1_4','No')">No</button>
+        <button onclick="ansYN(this,'c1_4','Case by case')">Case by case</button>
+      </div>
+      <div class="cond-remark" id="r_c1_4"><input type="text" placeholder="Min age / conditions…" oninput="autoTick('c1_4',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c1_5" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_5">Ward options available (Single / 4-bed / 6-bed / open ward)?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="answer-field"><input type="text" placeholder="e.g. Single, 4-bed, 6-bed available" oninput="autoTick('c1_5',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c1_6" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_6">Required list of personal belongings, toiletries &amp; medical supplies provided?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c1_6','Yes — received list')">Yes — received list</button>
+        <button onclick="ansYN(this,'c1_6','No')">No</button>
+      </div>
+      <div class="answer-field" style="margin-top:6px"><textarea placeholder="Key items on list, any surprises…" oninput="autoTick('c1_6',this.value)"></textarea></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c1_7" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_7">Waiting list length for private / non-subsidised room?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="answer-field"><input type="text" placeholder="e.g. 6 months / no waitlist" oninput="autoTick('c1_7',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c1_8" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_8">Home under MOH Portable Subsidy Scheme?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c1_8','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c1_8','No')">No</button>
+        <button onclick="ansYN(this,'c1_8','Not sure')">Not sure</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c1_9" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_9">Base fees (non-subsidised) for temp and long-term stay?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="answer-field"><textarea placeholder="e.g. Temp: $120/day · Long-term: $3,500/mth · Single room: +$800/mth" oninput="autoTick('c1_9',this.value)"></textarea></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c1_10" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_10">Add-on charges listed (diapers, milk powder, wound dressings, hospital escort)?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c1_10','Yes — full list')">Yes — full list</button>
+        <button onclick="ansYN(this,'c1_10','Partial')">Partial</button>
+        <button onclick="ansYN(this,'c1_10','No')">No</button>
+      </div>
+      <div class="answer-field" style="margin-top:6px"><textarea placeholder="Key add-ons and costs…" oninput="autoTick('c1_10',this.value)"></textarea></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c1_11" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_11">Family Support Group or clear grievance channel available?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c1_11','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c1_11','No')">No</button>
+      </div>
+      <div class="cond-remark" id="r_c1_11"><input type="text" placeholder="How to reach them…" oninput="autoTick('c1_11',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="notes-field"><label>Section Notes</label><textarea id="n1" placeholder="Overall admission process impressions…"></textarea></div>
+</div>
+</div>
+
+<!-- S2 Clinical -->
+<div class="sec-card" data-sec="2">
+<button class="sec-header" onclick="toggleSec(this)">
+  <div class="sec-icon">🩺</div>
+  <div class="sec-title-wrap">
+    <span class="sec-title">2. Clinical Care &amp; Medical Complexity</span>
+    <span class="sec-meta"><span class="sec-badge badge-m" id="sm2">—</span><span class="sec-badge badge-i" id="si2">—</span></span>
+  </div>
+  <span class="chevron">⌄</span>
+</button>
+<div class="sec-body" id="sb2">
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c2_1" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_1">Nurse / aide ratio per ward (day &amp; night)?</label>
+      <div class="answer-field"><input type="text" placeholder="e.g. Day: 1:8, Night: 1:12" oninput="autoTick('c2_1',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c2_2" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_2">Can support BiPAP machine?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c2_2','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c2_2','No')">No</button>
+        <button onclick="ansYN(this,'c2_2','With arrangement')">With arrangement</button>
+      </div>
+      <div class="cond-remark" id="r_c2_2"><input type="text" placeholder="Conditions / details…" oninput="autoTick('c2_2',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c2_3" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_3">Tube feeding (Nasogastric / PEG) supported?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c2_3','Yes — both')">Yes — both</button>
+        <button onclick="ansYN(this,'c2_3','NG only')">NG only</button>
+        <button onclick="ansYN(this,'c2_3','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c2_4" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_4">Urinary catheter management available?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c2_4','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c2_4','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c2_5" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_5">Regular on-site doctor visits?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c2_5','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c2_5','No')">No</button>
+      </div>
+      <div class="answer-field" style="margin-top:6px"><input type="text" placeholder="Frequency, e.g. daily / twice weekly" oninput="autoTick('c2_5',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c2_6" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_6">In-house Physiotherapy / Occupational Therapy?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c2_6','Both')">Both</button>
+        <button onclick="ansYN(this,'c2_6','Physio only')">Physio only</button>
+        <button onclick="ansYN(this,'c2_6','OT only')">OT only</button>
+        <button onclick="ansYN(this,'c2_6','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c2_7" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_7">Billing uses subsidised public healthcare referrals (not private rates)?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c2_7','Yes — subsidised')">Yes — subsidised</button>
+        <button onclick="ansYN(this,'c2_7','No — private rates')">No — private rates</button>
+        <button onclick="ansYN(this,'c2_7','Mixed')">Mixed</button>
+      </div>
+      <div class="cond-remark" id="r_c2_7"><input type="text" placeholder="Details…" oninput="autoTick('c2_7',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c2_8" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_8">Emergency hospital affiliation &amp; patient has choice of hospital / ward type?</label>
+      <div class="answer-field"><input type="text" placeholder="e.g. Affiliated with SGH; patient can choose ward class" oninput="autoTick('c2_8',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c2_9" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_9">Medication protocols documented &amp; double-checked?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c2_9','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c2_9','No')">No</button>
+        <button onclick="ansYN(this,'c2_9','Unclear')">Unclear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c2_10" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c2_10">Mechanical hoists used for bed-to-wheelchair transfers?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c2_10','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c2_10','No — manual')">No — manual</button>
+        <button onclick="ansYN(this,'c2_10','Both available')">Both available</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes-field"><label>Section Notes</label><textarea id="n2" placeholder="Staff ratio numbers, doctor frequency, equipment confirmed…"></textarea></div>
+</div>
+</div>
+
+<!-- S3 Hygiene -->
+<div class="sec-card" data-sec="3">
+<button class="sec-header" onclick="toggleSec(this)">
+  <div class="sec-icon">🛁</div>
+  <div class="sec-title-wrap">
+    <span class="sec-title">3. Hygiene &amp; Personal Care</span>
+    <span class="sec-meta"><span class="sec-badge badge-m" id="sm3">—</span><span class="sec-badge badge-i" id="si3">—</span></span>
+  </div>
+  <span class="chevron">⌄</span>
+</button>
+<div class="sec-body" id="sb3">
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c3_1" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c3_1">Bathing / shower frequency per day?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="answer-field"><input type="text" placeholder="e.g. Once daily, 7am shower" oninput="autoTick('c3_1',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c3_2" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c3_2">Oral care schedule documented (brushing / denture cleaning)?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c3_2','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c3_2','No')">No</button>
+        <button onclick="ansYN(this,'c3_2','Unclear')">Unclear</button>
+      </div>
+      <div class="cond-remark" id="r_c3_2"><input type="text" placeholder="Frequency / schedule…" oninput="autoTick('c3_2',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c3_3" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c3_3">Bed-bound residents turned regularly (pressure sore prevention)?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c3_3','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c3_3','No')">No</button>
+        <button onclick="ansYN(this,'c3_3','Unclear')">Unclear</button>
+      </div>
+      <div class="answer-field" style="margin-top:6px"><input type="text" placeholder="Frequency, e.g. every 2 hours" oninput="autoTick('c3_3',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c3_4" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c3_4">Residents appear clean-shaven with trimmed nails? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c3_4','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c3_4','Mostly')">Mostly</button>
+        <button onclick="ansYN(this,'c3_4','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c3_5" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c3_5">Residents in day clothes (not pyjamas) during the day? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c3_5','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c3_5','Mostly')">Mostly</button>
+        <button onclick="ansYN(this,'c3_5','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c3_6" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c3_6">Residents appear generally clean (glasses, hair, clothing)? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c3_6','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c3_6','Mostly')">Mostly</button>
+        <button onclick="ansYN(this,'c3_6','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes-field"><label>Section Notes</label><textarea id="n3" placeholder="Ward walk observations…"></textarea></div>
+</div>
+</div>
+
+<!-- S4 Infection -->
+<div class="sec-card" data-sec="4">
+<button class="sec-header" onclick="toggleSec(this)">
+  <div class="sec-icon">🧴</div>
+  <div class="sec-title-wrap">
+    <span class="sec-title">4. Infection Control &amp; Prevention</span>
+    <span class="sec-meta"><span class="sec-badge badge-m" id="sm4">—</span><span class="sec-badge badge-i" id="si4">—</span></span>
+  </div>
+  <span class="chevron">⌄</span>
+</button>
+<div class="sec-body" id="sb4">
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c4_1" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c4_1">Hand sanitiser at every bedside &amp; ward entrance? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c4_1','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c4_1','Partially')">Partially</button>
+        <button onclick="ansYN(this,'c4_1','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c4_2" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c4_2">Staff observed sanitising hands between residents? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c4_2','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c4_2','Sometimes')">Sometimes</button>
+        <button onclick="ansYN(this,'c4_2','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c4_3" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c4_3">PPE (masks/gloves) worn appropriately during clinical tasks? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c4_3','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c4_3','Inconsistent')">Inconsistent</button>
+        <button onclick="ansYN(this,'c4_3','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c4_4" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c4_4">Outbreak protocol explained (COVID, flu, GI virus)?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c4_4','Yes — clearly')">Yes — clearly</button>
+        <button onclick="ansYN(this,'c4_4','Vague')">Vague</button>
+        <button onclick="ansYN(this,'c4_4','No')">No</button>
+      </div>
+      <div class="cond-remark" id="r_c4_4"><textarea placeholder="Describe protocol…" oninput="autoTick('c4_4',this.value)"></textarea></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c4_5" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c4_5">Annual flu jab / booster management in place?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c4_5','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c4_5','No')">No</button>
+        <button onclick="ansYN(this,'c4_5','Unclear')">Unclear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c4_6" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c4_6">Visitor hand-sanitising required; clear unwell-visitor policy?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c4_6','Yes — both')">Yes — both</button>
+        <button onclick="ansYN(this,'c4_6','Sanitising only')">Sanitising only</button>
+        <button onclick="ansYN(this,'c4_6','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c4_7" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c4_7">Soiled linen handled &amp; washed separately from clean clothes?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c4_7','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c4_7','No')">No</button>
+        <button onclick="ansYN(this,'c4_7','Unclear')">Unclear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes-field"><label>Section Notes</label><textarea id="n4" placeholder="Hygiene gaps noticed, PPE compliance observations…"></textarea></div>
+</div>
+</div>
+
+<!-- S5 Living Environment -->
+<div class="sec-card" data-sec="5">
+<button class="sec-header" onclick="toggleSec(this)">
+  <div class="sec-icon">👃</div>
+  <div class="sec-title-wrap">
+    <span class="sec-title">5. Living Environment (Sensory Test)</span>
+    <span class="sec-meta"><span class="sec-badge badge-m" id="sm5">—</span><span class="sec-badge badge-i" id="si5">—</span></span>
+  </div>
+  <span class="chevron">⌄</span>
+</button>
+<div class="sec-body" id="sb5">
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c5_1" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c5_1">Air is fresh (no pungent waste smell or heavy masking fragrance)? <em style="font-weight:400;color:var(--text-muted)">(sensory)</em></label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c5_1','Yes — fresh')">Yes — fresh</button>
+        <button onclick="ansYN(this,'c5_1','Mild odour')">Mild odour</button>
+        <button onclick="ansYN(this,'c5_1','Strong odour')">Strong odour</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c5_2" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c5_2">Ward well-ventilated with comfortable temperature (fans / AC)? <em style="font-weight:400;color:var(--text-muted)">(sensory)</em></label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c5_2','Yes — comfortable')">Yes — comfortable</button>
+        <button onclick="ansYN(this,'c5_2','Too warm')">Too warm</button>
+        <button onclick="ansYN(this,'c5_2','Too cold')">Too cold</button>
+        <button onclick="ansYN(this,'c5_2','Poor ventilation')">Poor ventilation</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c5_3" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c5_3">Toilets and common areas clean and dry? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c5_3','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c5_3','Mostly')">Mostly</button>
+        <button onclick="ansYN(this,'c5_3','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c5_4" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c5_4">Bedside curtains used consistently during care / diaper changes? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c5_4','Yes — always')">Yes — always</button>
+        <button onclick="ansYN(this,'c5_4','Sometimes')">Sometimes</button>
+        <button onclick="ansYN(this,'c5_4','Rarely')">Rarely</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c5_5" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c5_5">Own mattress / specialised bed permitted?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c5_5','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c5_5','No')">No</button>
+        <button onclick="ansYN(this,'c5_5','With approval')">With approval</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c5_6" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c5_6">Own power wheelchair permitted?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c5_6','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c5_6','No')">No</button>
+        <button onclick="ansYN(this,'c5_6','With approval')">With approval</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c5_7" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c5_7">Personal belongings (photos, clothing, small furniture) allowed?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c5_7','Yes — freely')">Yes — freely</button>
+        <button onclick="ansYN(this,'c5_7','Limited')">Limited</button>
+        <button onclick="ansYN(this,'c5_7','No')">No</button>
+      </div>
+      <div class="cond-remark" id="r_c5_7"><input type="text" placeholder="What is/isn't allowed…" oninput="autoTick('c5_7',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="notes-field"><label>Sensory Impressions</label><textarea id="n5" placeholder="Smells, lighting, noise levels, overall feel…"></textarea></div>
+</div>
+</div>
+
+<!-- S6 Food -->
+<div class="sec-card" data-sec="6">
+<button class="sec-header" onclick="toggleSec(this)">
+  <div class="sec-icon">🍚</div>
+  <div class="sec-title-wrap">
+    <span class="sec-title">6. Food, Nutrition &amp; Lifestyle</span>
+    <span class="sec-meta"><span class="sec-badge badge-m" id="sm6">—</span><span class="sec-badge badge-i" id="si6">—</span></span>
+  </div>
+  <span class="chevron">⌄</span>
+</button>
+<div class="sec-body" id="sb6">
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c6_1" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c6_1">Food looks appetising (saw a real tray)? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c6_1','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c6_1','Acceptable')">Acceptable</button>
+        <button onclick="ansYN(this,'c6_1','No')">No</button>
+        <button onclick="ansYN(this,'c6_1','Did not see')">Did not see</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c6_2" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c6_2">Texture modification available (pureed / soft / small pieces)?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c6_2','Yes — all types')">Yes — all types</button>
+        <button onclick="ansYN(this,'c6_2','Limited')">Limited</button>
+        <button onclick="ansYN(this,'c6_2','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c6_3" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c6_3">Residents have input into meal choices?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c6_3','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c6_3','Limited')">Limited</button>
+        <button onclick="ansYN(this,'c6_3','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c6_4" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c6_4">Outside food / GrabFood / FoodPanda delivery allowed?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c6_4','Yes — freely')">Yes — freely</button>
+        <button onclick="ansYN(this,'c6_4','With restrictions')">With restrictions</button>
+        <button onclick="ansYN(this,'c6_4','No')">No</button>
+      </div>
+      <div class="cond-remark" id="r_c6_4"><input type="text" placeholder="What restrictions?" oninput="autoTick('c6_4',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c6_5" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c6_5">Eating assistance provided when needed? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c6_5','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c6_5','Inconsistent')">Inconsistent</button>
+        <button onclick="ansYN(this,'c6_5','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c6_6" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c6_6">Residents given sufficient time to finish meals? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c6_6','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c6_6','Rushed')">Rushed</button>
+        <button onclick="ansYN(this,'c6_6','Unclear')">Unclear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c6_7" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c6_7">Water cups within easy reach &amp; refilled regularly? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c6_7','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c6_7','Partially')">Partially</button>
+        <button onclick="ansYN(this,'c6_7','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c6_8" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c6_8">Stable Wi-Fi accessible to residents?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c6_8','Yes — free')">Yes — free</button>
+        <button onclick="ansYN(this,'c6_8','Yes — paid')">Yes — paid</button>
+        <button onclick="ansYN(this,'c6_8','No')">No</button>
+      </div>
+      <div class="answer-field" style="margin-top:6px"><input type="text" placeholder="Signal quality / speed notes" oninput="autoTick('c6_8',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c6_9" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c6_9">Charging plugs at bedside for phones / tablets? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c6_9','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c6_9','No')">No</button>
+        <button onclick="ansYN(this,'c6_9','Shared only')">Shared only</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes-field"><label>Section Notes</label><textarea id="n6" placeholder="Food quality impressions, delivery policy, connectivity…"></textarea></div>
+</div>
+</div>
+
+<!-- S7 Dignity -->
+<div class="sec-card" data-sec="7">
+<button class="sec-header" onclick="toggleSec(this)">
+  <div class="sec-icon">🤝</div>
+  <div class="sec-title-wrap">
+    <span class="sec-title">7. Dignity &amp; Psychosocial Well-being</span>
+    <span class="sec-meta"><span class="sec-badge badge-m" id="sm7">—</span><span class="sec-badge badge-i" id="si7">—</span></span>
+  </div>
+  <span class="chevron">⌄</span>
+</button>
+<div class="sec-body" id="sb7">
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c7_1" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c7_1">Staff knock before entering; modesty respected during cleaning? <em style="font-weight:400;color:var(--text-muted)">(observed)</em></label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c7_1','Yes — always')">Yes — always</button>
+        <button onclick="ansYN(this,'c7_1','Sometimes')">Sometimes</button>
+        <button onclick="ansYN(this,'c7_1','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c7_2" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c7_2">Residents allowed to choose own wake-up / sleep times?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c7_2','Yes — flexible')">Yes — flexible</button>
+        <button onclick="ansYN(this,'c7_2','Fixed schedule')">Fixed schedule</button>
+        <button onclick="ansYN(this,'c7_2','Unclear')">Unclear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c7_3" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c7_3">Residents can choose own daily routines &amp; activities?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c7_3','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c7_3','Partially')">Partially</button>
+        <button onclick="ansYN(this,'c7_3','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c7_4" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c7_4">Residents can opt out of scheduled nursing home activities?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c7_4','Yes — freely')">Yes — freely</button>
+        <button onclick="ansYN(this,'c7_4','Discouraged')">Discouraged</button>
+        <button onclick="ansYN(this,'c7_4','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c7_5" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c7_5">Staff speak resident's preferred language / dialect?</label>
+      <div class="answer-field"><input type="text" placeholder="e.g. Mandarin, Hokkien, Malay — confirm which" oninput="autoTick('c7_5',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c7_6" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c7_6">Visiting hours are flexible?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c7_6','Yes — open')">Yes — open</button>
+        <button onclick="ansYN(this,'c7_6','Fixed hours')">Fixed hours</button>
+      </div>
+      <div class="answer-field" style="margin-top:6px"><input type="text" placeholder="e.g. 10am–8pm daily" oninput="autoTick('c7_6',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c7_7" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c7_7">Private, comfortable areas for family visits available?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c7_7','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c7_7','Ward only')">Ward only</button>
+        <button onclick="ansYN(this,'c7_7','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c7_8" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c7_8">Outdoor areas (garden / patio) accessible for wheelchairs?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c7_8','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c7_8','Limited access')">Limited access</button>
+        <button onclick="ansYN(this,'c7_8','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes-field"><label>Section Notes</label><textarea id="n7" placeholder="Staff interactions, language observed, atmosphere…"></textarea></div>
+</div>
+</div>
+
+<!-- S8 End of Life -->
+<div class="sec-card" data-sec="8">
+<button class="sec-header" onclick="toggleSec(this)">
+  <div class="sec-icon">🕯️</div>
+  <div class="sec-title-wrap">
+    <span class="sec-title">8. End-of-Life &amp; Post-Death Protocols</span>
+    <span class="sec-meta"><span class="sec-badge badge-m" id="sm8">—</span><span class="sec-badge badge-i" id="si8">—</span></span>
+  </div>
+  <span class="chevron">⌄</span>
+</button>
+<div class="sec-body" id="sb8">
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c8_1" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c8_1">Resident doctor can certify death on-site?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c8_1','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c8_1','No — external doctor')">No — external doctor</button>
+        <button onclick="ansYN(this,'c8_1','Unclear')">Unclear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c8_2" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c8_2">Circumstances for hospital mortuary transfer clarified?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c8_2','Yes — clearly')">Yes — clearly</button>
+        <button onclick="ansYN(this,'c8_2','Vague')">Vague</button>
+        <button onclick="ansYN(this,'c8_2','No')">No</button>
+      </div>
+      <div class="cond-remark" id="r_c8_2"><textarea placeholder="Under what circumstances is transfer required?" oninput="autoTick('c8_2',this.value)"></textarea></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="important">
+    <input type="checkbox" id="c8_3" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c8_3">Advance Care Planning (ACP) sessions facilitated?</label>
+      <span class="priority-tag tag-important">🟡 Important</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c8_3','Yes — in-house')">Yes — in-house</button>
+        <button onclick="ansYN(this,'c8_3','External referral')">External referral</button>
+        <button onclick="ansYN(this,'c8_3','No')">No</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c8_4" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c8_4">Religious rites / procedures near or after death can be recorded &amp; stored?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c8_4','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c8_4','No')">No</button>
+        <button onclick="ansYN(this,'c8_4','Unclear')">Unclear</button>
+      </div>
+      <div class="answer-field" style="margin-top:6px"><input type="text" placeholder="How are wishes stored / accessed?" oninput="autoTick('c8_4',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c8_5" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c8_5">Priority contacts &amp; preferred items for final journey can be documented?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c8_5','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c8_5','No')">No</button>
+        <button onclick="ansYN(this,'c8_5','Unclear')">Unclear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="none">
+    <input type="checkbox" id="c8_6" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c8_6">Partnership with external hospice provider (HCA / Dover Park)?</label>
+      <div class="yn-answer">
+        <button onclick="ansYN(this,'c8_6','Yes')">Yes</button>
+        <button onclick="ansYN(this,'c8_6','No')">No</button>
+      </div>
+      <div class="answer-field" style="margin-top:6px"><input type="text" placeholder="Which hospice partner(s)?" oninput="autoTick('c8_6',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
+    <input type="checkbox" id="c8_7" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c8_7">Grace period for family to arrange body removal stated?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="answer-field"><input type="text" placeholder="e.g. 4–6 hours" oninput="autoTick('c8_7',this.value)"></div>
+    </div>
+  </div>
+
+  <div class="notes-field"><label>Section Notes</label><textarea id="n8" placeholder="ACP process, hospice partners, grace period, religious arrangements…"></textarea></div>
+</div>
+</div>
+
+<!-- GUT FEELING -->
+<div class="gut-card">
+  <h2>Post-Visit Summary &amp; Gut Feeling</h2>
+
+  <div class="gut-q">
+    <p>Does the facility feel like a home or an institution?</p>
+    <div class="btn-row">
+      <button class="sel-btn" onclick="selBtn(this,'feel','home','s-teal')">🏡 Feels like home</button>
+      <button class="sel-btn" onclick="selBtn(this,'feel','mixed','s-amber')">😐 Mixed</button>
+      <button class="sel-btn" onclick="selBtn(this,'feel','institution','s-red')">🏢 Institution</button>
+    </div>
+  </div>
+
+  <div class="gut-q">
+    <p>Can you picture your loved one living here?</p>
+    <div class="yn-row">
+      <button class="yn-btn" onclick="selYN(this,'picture','yes','s-teal')">Yes</button>
+      <button class="yn-btn" onclick="selYN(this,'picture','maybe','s-amber')">Maybe</button>
+      <button class="yn-btn" onclick="selYN(this,'picture','no','s-red')">No</button>
+    </div>
+  </div>
+
+  <div class="gut-q">
+    <p>How did staff respond to your questions?</p>
+    <div class="btn-row">
+      <button class="sel-btn" onclick="selBtn(this,'staff','transparent','s-teal')">✅ Transparent</button>
+      <button class="sel-btn" onclick="selBtn(this,'staff','guarded','s-amber')">🤔 Guarded</button>
+      <button class="sel-btn" onclick="selBtn(this,'staff','defensive','s-red')">🚩 Defensive</button>
+    </div>
+  </div>
+
+  <div class="gut-q">
+    <p>Overall rating</p>
+    <div class="btn-row">
+      <button class="sel-btn" onclick="selRating(this,'excellent','s-teal')">⭐ Excellent</button>
+      <button class="sel-btn" onclick="selRating(this,'good','s-green')">👍 Good</button>
+      <button class="sel-btn" onclick="selRating(this,'fair','s-amber')">🆗 Fair</button>
+      <button class="sel-btn" onclick="selRating(this,'poor','s-red')">👎 Poor</button>
+    </div>
+  </div>
+
+  <div class="field-row" style="margin-top:14px">
+    <label class="fl">Key Notes / Overall Impression</label>
+    <textarea id="keyNotes" placeholder="Summarise key concerns, standout positives, overall impression…" style="min-height:110px"></textarea>
+  </div>
+</div>
+
+<!-- ── SAVE / LOAD / SUBMIT ── -->
+<div class="action-card">
+  <h2>☁️ Save to Google Sheet</h2>
+  <p class="desc">Save your evaluation to a shared Google Sheet — accessible by anyone in the family from any device, no sign-in needed.</p>
+  <div id="scriptUrlWrap">
+    <div class="warn">⚙️ <strong>Setup needed:</strong> Paste your Apps Script URL below once to connect to your Google Sheet. <em>(Or ask the form creator to bake it in — then no setup is needed at all.)</em></div>
+    <div class="field-row" style="margin-top:10px"><label class="fl">Apps Script URL</label><input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/…/exec"></div>
+    <button class="big-btn btn-outline-teal" style="border:1.5px solid var(--teal-mid);margin-top:4px" onclick="saveScriptUrl()">Connect Sheet</button>
+  </div>
+  <div id="cloudSaveWrap" style="display:none">
+    <div class="tip" style="margin-bottom:12px">✅ Connected to Google Sheet · <button onclick="disconnectSheet()" style="background:none;border:none;color:var(--teal);font-size:13px;cursor:pointer;text-decoration:underline;font-family:inherit">Change</button></div>
+    <button class="big-btn btn-primary" id="saveCloudBtn" onclick="saveToSheet()">☁️ Save to Sheet</button>
+    <button class="big-btn btn-outline-teal" style="border:1.5px solid var(--teal-mid);" onclick="openCloudModal()">📂 Load from Sheet</button>
+    <!-- SHARE LINK BOX — shown after saving -->
+    <div id="shareLinkBox" style="display:none;margin-top:14px;background:var(--teal-light);border:1.5px solid var(--teal-mid);border-radius:var(--rs);padding:14px">
+      <p id="shareLinkLabel" style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:8px"></p>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="shareLinkInput" readonly style="flex:1;font-size:12px;background:var(--white);padding:9px 11px;border:1.5px solid var(--teal-mid);border-radius:var(--rs);color:var(--text);font-family:monospace">
+        <button onclick="copyShareLink()" style="flex-shrink:0;padding:9px 14px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Copy</button>
+      </div>
+      <p style="font-size:12px;color:var(--teal);margin-top:8px;line-height:1.5">📲 Share this link via WhatsApp or email. Anyone who opens it will see this evaluation fully loaded.</p>
+    </div>
+  </div>
+  <div style="margin-top:10px;border-top:1px solid var(--gray-light);padding-top:10px">
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px">Also save a local backup on this device:</p>
+    <button class="big-btn btn-outline-teal" style="border:1.5px solid var(--teal-mid);font-size:14px;padding:11px" onclick="saveForm()">💾 Save to Device</button>
+    <button class="big-btn btn-outline-teal" style="border:1.5px solid var(--teal-mid);font-size:14px;padding:11px" onclick="openLoadModal()">📱 Load from Device</button>
+  </div>
+</div>
+
+<div class="action-card">
+  <h2>📤 Submit Report</h2>
+  <p class="desc">Share a live link, send by email, or copy as text.</p>
+
+  <div id="submitShareBox" style="display:none;margin-bottom:14px;background:var(--teal-light);border:1.5px solid var(--teal-mid);border-radius:var(--rs);padding:14px">
+    <p style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:8px">🔗 Share this evaluation as a link:</p>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="text" id="submitShareInput" readonly style="flex:1;font-size:12px;background:var(--white);padding:9px 11px;border:1.5px solid var(--teal-mid);border-radius:var(--rs);color:var(--text);font-family:monospace">
+      <button onclick="copySubmitLink()" style="flex-shrink:0;padding:9px 14px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Copy</button>
+    </div>
+    <p style="font-size:12px;color:var(--teal);margin-top:6px">Recipient opens the link → form loads with all your answers.</p>
+  </div>
+  <div id="submitNoSheet" style="display:none" class="warn" style="margin-bottom:12px">
+    💡 Save to Sheet first to get a shareable link.
+  </div>
+
+  <div class="field-row"><label class="fl">Send report to (email)</label><input type="email" id="submitEmail" placeholder="yourname@gmail.com"></div>
+  <button class="big-btn btn-primary" onclick="submitEmail()">📧 Open in Email App</button>
+  <div class="divider">— or —</div>
+  <button class="big-btn btn-outline-teal" style="border:1.5px solid var(--teal-mid);" onclick="copyReport()">📋 Copy Full Report as Text</button>
+  <div class="tip">💡 Paste copied text into Google Docs, WhatsApp or Notes. Fully editable after pasting.</div>
+</div>
+
+</div><!-- /container -->
+
+<!-- LOCAL LOAD MODAL -->
+<div class="overlay" id="loadOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h3>📱 Load from Device</h3>
+    <div id="slotList"></div>
+    <button class="modal-close" onclick="closeModal('loadOverlay')">Cancel</button>
+  </div>
+</div>
+
+<!-- CLOUD LOAD MODAL -->
+<div class="overlay" id="cloudOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h3>☁️ Load from Google Sheet</h3>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px">Tap any entry to load it into the form.</p>
+    <div id="cloudSlotList"><div class="empty-slots">Loading…</div></div>
+    <button class="modal-close" onclick="closeModal('cloudOverlay')">Cancel</button>
+  </div>
+</div>
+
+<!-- BACK TO TOP -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+const gut = {}, yn = {};
+let rating = '';
+let currentFilter = 'all';
+
+// ══════════════════════════════════════════
+// ⚙️  PASTE YOUR APPS SCRIPT URL BELOW
+// ══════════════════════════════════════════
+const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHxE4QsYJB3S3rqK7G0If9Wi5UC-qAKwD6aAfOSzmpLilUBvrjWqCUo6Lxuxi0Em3LIA/exec';
+
+// ══════════════════════════════════════════
+// APPS SCRIPT URL — stored in localStorage
+// ══════════════════════════════════════════
+function getScriptUrl() {
+  // use manually saved URL if set, otherwise fall back to the default baked in above
+  const saved = localStorage.getItem('nhScriptUrl');
+  if (saved && saved.startsWith('https://')) return saved;
+  if (DEFAULT_SCRIPT_URL && DEFAULT_SCRIPT_URL !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') return DEFAULT_SCRIPT_URL;
+  return '';
+}
+
+function saveScriptUrl() {
+  const url = document.getElementById('scriptUrlInput').value.trim();
+  if (!url.startsWith('https://script.google.com')) {
+    toast('⚠️ Please paste a valid Apps Script URL'); return;
+  }
+  localStorage.setItem('nhScriptUrl', url);
+  checkScriptSetup();
+  toast('✅ Google Sheet connected!');
+}
+
+function disconnectSheet() {
+  localStorage.removeItem('nhScriptUrl');
+  checkScriptSetup();
+}
+
+function checkScriptSetup() {
+  const url = getScriptUrl();
+  document.getElementById('scriptUrlWrap').style.display = url ? 'none' : 'block';
+  document.getElementById('cloudSaveWrap').style.display = url ? 'block' : 'none';
+}
+
+// ══════════════════════════════════════════
+// SECTION TOGGLE
+// ══════════════════════════════════════════
+function toggleSec(btn) {
+  btn.classList.toggle('open');
+  btn.nextElementSibling.classList.toggle('open');
+}
+
+// ══════════════════════════════════════════
+// FILTER
+// ══════════════════════════════════════════
+let allExpanded = false;
+
+function setFilter(f) {
+  if (f === 'all') {
+    // if already on 'all', toggle expand/collapse all sections
+    if (currentFilter === 'all') {
+      allExpanded = !allExpanded;
+      document.querySelectorAll('.sec-card').forEach(card => {
+        const hdr = card.querySelector('.sec-header');
+        const body = card.querySelector('.sec-body');
+        if (allExpanded) { hdr.classList.add('open'); body.classList.add('open'); }
+        else { hdr.classList.remove('open'); body.classList.remove('open'); }
+      });
+      // update button label to hint current state
+      const btn = document.getElementById('fAll');
+      btn.textContent = allExpanded ? 'Collapse all' : 'All items';
+      return;
+    }
+    // switching back to all from another filter
+    currentFilter = 'all';
+    allExpanded = false;
+    document.getElementById('fAll').className = 'filter-btn active-all';
+    document.getElementById('fAll').textContent = 'All items';
+    document.getElementById('fMand').className = 'filter-btn';
+    document.getElementById('fImp').className = 'filter-btn';
+    document.querySelectorAll('.check-item').forEach(item => item.classList.remove('hidden'));
+    // collapse all sections when returning to All view
+    document.querySelectorAll('.sec-card').forEach(card => {
+      card.querySelector('.sec-header').classList.remove('open');
+      card.querySelector('.sec-body').classList.remove('open');
+    });
+    return;
+  }
+
+  currentFilter = f;
+  allExpanded = false;
+  document.getElementById('fAll').className = 'filter-btn';
+  document.getElementById('fAll').textContent = 'All items';
+  document.getElementById('fMand').className = 'filter-btn' + (f==='mandatory' ? ' active-mandatory' : '');
+  document.getElementById('fImp').className = 'filter-btn' + (f==='important' ? ' active-important' : '');
+
+  document.querySelectorAll('.check-item').forEach(item => {
+    const p = item.dataset.priority || 'none';
+    item.classList.toggle('hidden', p !== f);
+  });
+
+  // auto-open sections with visible items, collapse empty ones
+  document.querySelectorAll('.sec-card').forEach(card => {
+    const vis = card.querySelectorAll('.check-item:not(.hidden)');
+    const hdr = card.querySelector('.sec-header');
+    const body = card.querySelector('.sec-body');
+    if (vis.length > 0) { hdr.classList.add('open'); body.classList.add('open'); }
+    else { hdr.classList.remove('open'); body.classList.remove('open'); }
+  });
+}
+
+// ══════════════════════════════════════════
+// COUNTERS
+// ══════════════════════════════════════════
+function tick() { updateCounters(); }
+
+function updateCounters() {
+  let total=0,checked=0,mTotal=0,mDone=0,iTotal=0,iDone=0;
+  document.querySelectorAll('.check-item').forEach(item => {
+    const cb = item.querySelector('input[type=checkbox]');
+    if (!cb) return;
+    const p = item.dataset.priority;
+    total++; if(cb.checked) checked++;
+    if(p==='mandatory'){mTotal++;if(cb.checked)mDone++;}
+    if(p==='important'){iTotal++;if(cb.checked)iDone++;}
+  });
+  const mLeft=mTotal-mDone, iLeft=iTotal-iDone;
+  const pct=total>0?Math.round(checked/total*100):0;
+  const pm=document.getElementById('pillM');
+  pm.textContent=mLeft===0?'🔴 All mandatory done ✓':`🔴 ${mLeft} mandatory left`;
+  pm.className='stat-pill '+(mLeft===0?'pill-mandatory done':'pill-mandatory');
+  const pi=document.getElementById('pillI');
+  pi.textContent=iLeft===0?'🟡 All important done ✓':`🟡 ${iLeft} important left`;
+  pi.className='stat-pill '+(iLeft===0?'pill-important done':'pill-important');
+  document.getElementById('pillT').textContent=`${checked} / ${total} total`;
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLabel').textContent=`${checked} of ${total} items checked (${pct}%)`;
+  for(let s=1;s<=8;s++){
+    const body=document.getElementById('sb'+s);if(!body)continue;
+    let sm=0,smD=0,si=0,siD=0;
+    body.querySelectorAll('.check-item').forEach(item=>{
+      const cb=item.querySelector('input[type=checkbox]'),p=item.dataset.priority;
+      if(p==='mandatory'){sm++;if(cb&&cb.checked)smD++;}
+      if(p==='important'){si++;if(cb&&cb.checked)siD++;}
+    });
+    const bm=document.getElementById('sm'+s),bi=document.getElementById('si'+s);
+    if(bm)bm.textContent=smD===sm?`✓ ${sm} mandatory`:`${sm-smD}/${sm} mandatory`;
+    if(bi)bi.textContent=siD===si?`✓ ${si} important`:`${si-siD}/${si} important`;
+  }
+}
+
+// ══════════════════════════════════════════
+// ANSWER BUTTONS — auto-tick checkbox
+// ══════════════════════════════════════════
+function ansYN(btn, cbId, val) {
+  const cb = document.getElementById(cbId);
+  const alreadySelected = btn.classList.contains('ans-yes') ||
+                          btn.classList.contains('ans-no') ||
+                          btn.classList.contains('ans-cond');
+
+  // clear all buttons in group first
+  btn.parentElement.querySelectorAll('button').forEach(b => {
+    b.classList.remove('ans-yes','ans-no','ans-cond','ans-obs');
+  });
+
+  // hide any remark field
+  const remarkId = 'r_' + cbId;
+  const remark = document.getElementById(remarkId);
+  if (remark) remark.classList.remove('show');
+
+  if (alreadySelected) {
+    // toggle OFF — clear answer and uncheck box
+    if (cb) { cb.dataset.answer = ''; cb.checked = false; tick(); }
+    return;
+  }
+
+  // apply colour class
+  const lower = val.toLowerCase();
+  if (lower==='yes'||lower.startsWith('yes')||lower==='both'||lower.includes('clearly')||lower.includes('freely')||lower.includes('fresh')||lower.includes('comfortable')||lower.includes('always')||lower.includes('flexible')||lower.includes('open')||lower.includes('free')||lower.includes('all types')||lower.includes('full list')||lower.includes('in-house')||lower.includes('subsidised')) {
+    btn.classList.add('ans-yes');
+  } else if (lower==='no'||lower.includes('private rates')||lower.includes('strong odour')||lower.includes('manual')||lower.includes('fixed schedule')||lower.includes('ward only')||lower.includes('rushed')||lower.includes('poor ventilation')) {
+    btn.classList.add('ans-no');
+  } else {
+    btn.classList.add('ans-cond');
+  }
+
+  // show remark field for conditional answers
+  if (remark) {
+    const needsRemark = lower.includes('condition')||lower.includes('case by case')||lower.includes('arrangement')||lower.includes('mixed')||lower.includes('vague')||lower.includes('unclear')||lower.includes('partial')||lower.includes('restriction')||lower.includes('limited')||lower.includes('approval');
+    if (needsRemark) remark.classList.add('show');
+  }
+
+  // store and auto-tick
+  if (cb) { cb.dataset.answer = val; cb.checked = true; tick(); }
+}
+
+function autoTick(cbId, val) {
+  const cb = document.getElementById(cbId);
+  if (!cb) return;
+  // only uncheck if no button answer selected either
+  const hasButtonAnswer = cb.dataset.answer && cb.dataset.answer.length > 0;
+  if (val.trim().length > 0) {
+    cb.checked = true;
+  } else if (!hasButtonAnswer) {
+    cb.checked = false;
+  }
+  tick();
+}
+function selBtn(btn,key,val,cls){
+  const already = btn.classList.contains(cls);
+  btn.parentElement.querySelectorAll('.sel-btn').forEach(b=>b.className='sel-btn');
+  if(already){ delete gut[key]; return; }
+  btn.classList.add(cls); gut[key]=val;
+}
+function selRating(btn,val,cls){
+  const already = btn.classList.contains(cls);
+  btn.parentElement.querySelectorAll('.sel-btn').forEach(b=>b.className='sel-btn');
+  if(already){ rating=''; return; }
+  btn.classList.add(cls); rating=val;
+}
+function selYN(btn,key,val,cls){
+  const already = btn.classList.contains(cls);
+  btn.parentElement.querySelectorAll('.yn-btn').forEach(b=>b.className='yn-btn');
+  if(already){ delete yn[key]; return; }
+  btn.classList.add(cls); yn[key]=val;
+}
+
+// ══════════════════════════════════════════
+// COLLECT & RESTORE DATA
+// ══════════════════════════════════════════
+function v(id){const el=document.getElementById(id);return el?el.value||'':'';}
+
+function collectData() {
+  const sections=[];
+  for(let s=1;s<=8;s++){
+    const body=document.getElementById('sb'+s);if(!body)continue;
+    const items=[];
+    body.querySelectorAll('.check-item').forEach(item=>{
+      const cb=item.querySelector('input[type=checkbox]');
+      const lbl=item.querySelector('.check-label');
+      if(!cb||!lbl)return;
+      // collect button answer
+      const btnAnswer = cb.dataset.answer || '';
+      // collect text/textarea answers
+      const textInputs = [...item.querySelectorAll('.answer-field input[type=text], .answer-field textarea, .cond-remark input, .cond-remark textarea')];
+      const textAnswer = textInputs.map(el=>el.value).filter(Boolean).join(' | ');
+      const answer = btnAnswer ? (textAnswer ? `${btnAnswer} — ${textAnswer}` : btnAnswer) : textAnswer;
+      items.push({checked:cb.checked,label:lbl.textContent.trim(),priority:item.dataset.priority||'none',answer});
+    });
+    sections.push({title:body.previousElementSibling.querySelector('.sec-title').textContent,items,notes:v('n'+s)});
+  }
+  return {
+    visitDate:v('visitDate'),visitorName:v('visitorName'),
+    facilityName:v('facilityName'),facilityAddr:v('facilityAddr'),
+    patientName:v('patientName'),sections,gut:{...gut},yn:{...yn},rating,
+    redFlags:'0',keyNotes:v('keyNotes'),
+    submitEmail:v('submitEmail'),saveName:v('saveName'),
+    savedAt:new Date().toISOString()
+  };
+}
+
+function encodeData(data){ return btoa(unescape(encodeURIComponent(JSON.stringify(data)))); }
+function decodeData(code){ try{return JSON.parse(decodeURIComponent(escape(atob(code))));}catch{return null;} }
+
+function restoreData(d) {
+  if(!d)return;
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
+  set('visitDate',d.visitDate);set('visitorName',d.visitorName);
+  set('facilityName',d.facilityName);set('facilityAddr',d.facilityAddr);
+  set('patientName',d.patientName);set('redFlags',d.redFlags);
+  set('keyNotes',d.keyNotes);set('submitEmail',d.submitEmail);set('saveName',d.saveName);
+  if(d.sections){
+    for(let s=1;s<=8;s++){
+      const sec=d.sections[s-1];if(!sec)continue;
+      set('n'+s,sec.notes);
+      const body=document.getElementById('sb'+s);
+      const items=body.querySelectorAll('.check-item');
+      sec.items.forEach((saved,i)=>{
+        if(!items[i])return;
+        const cb=items[i].querySelector('input[type=checkbox]');
+        if(cb){
+          cb.checked=saved.checked;
+          // restore button answer
+          if(saved.answer){
+            const parts=saved.answer.split(' — ');
+            const btnVal=parts[0];
+            const textVal=parts.slice(1).join(' — ');
+            // find and click matching button
+            items[i].querySelectorAll('.yn-answer button').forEach(btn=>{
+              if(btn.textContent.trim()===btnVal){
+                btn.click();
+              }
+            });
+            // restore text fields
+            const textInputs=[...items[i].querySelectorAll('.answer-field input[type=text],.answer-field textarea,.cond-remark input,.cond-remark textarea')];
+            if(textInputs.length>0&&textVal){
+              textInputs[0].value=textVal;
+            } else if(textInputs.length>0&&!btnVal&&saved.answer){
+              textInputs[0].value=saved.answer;
+            }
+          }
+        }
+      });
+    }
+  }
+  // restore gut
+  if(d.gut)Object.assign(gut,d.gut);
+  if(d.yn)Object.assign(yn,d.yn);
+  if(d.rating)rating=d.rating;
+  document.querySelectorAll('.sel-btn').forEach(btn=>{
+    const oc=btn.getAttribute('onclick')||'';
+    const km=oc.match(/'(\w+)','(\w[\w-]*)','(s-\w+)'/);
+    if(!km)return;
+    const[,key,val,cls]=km;
+    const isGut=oc.startsWith('selBtn')&&gut[key]===val;
+    const isRat=oc.startsWith('selRating')&&rating===val;
+    if(isGut||isRat){btn.parentElement.querySelectorAll('.sel-btn').forEach(b=>b.className='sel-btn');btn.classList.add(cls);}
+  });
+  document.querySelectorAll('.yn-btn').forEach(btn=>{
+    const oc=btn.getAttribute('onclick')||'';
+    const km=oc.match(/'(\w+)','(\w[\w-]*)','(s-\w+)'/);
+    if(!km)return;
+    const[,key,val,cls]=km;
+    if(yn[key]===val){btn.parentElement.querySelectorAll('.yn-btn').forEach(b=>b.className='yn-btn');btn.classList.add(cls);}
+  });
+  updateCounters();
+}
+
+// ══════════════════════════════════════════
+// LOCAL SAVE / LOAD
+// ══════════════════════════════════════════
+function getSaves(){try{return JSON.parse(localStorage.getItem('nhSaves')||'[]');}catch{return[];}}
+function putSaves(arr){try{localStorage.setItem('nhSaves',JSON.stringify(arr));}catch{toast('Storage full');}}
+
+function saveForm() {
+  const data=collectData();
+  const name=data.saveName||data.facilityName||('Save '+new Date().toLocaleDateString('en-SG'));
+  const saves=getSaves();
+  const i=saves.findIndex(s=>s.name===name);
+  const entry={name,savedAt:data.savedAt,data};
+  if(i>=0)saves[i]=entry;else saves.unshift(entry);
+  if(saves.length>20)saves.splice(20);
+  putSaves(saves);
+  toast('💾 Saved locally: '+name);
+}
+
+function quickSave(){saveForm();}
+
+function openLoadModal(){
+  const saves=getSaves();
+  const list=document.getElementById('slotList');
+  if(!saves.length){
+    list.innerHTML='<div class="empty-slots">No local saves yet.<br>Tap <strong>Save to Device</strong> first.</div>';
+  } else {
+    list.innerHTML=saves.map((s,i)=>`
+      <div class="slot-item" onclick="loadLocalSlot(${i})">
+        <div class="slot-info">
+          <div class="slot-name">${esc(s.name)}</div>
+          <div class="slot-date">${new Date(s.savedAt).toLocaleString('en-SG')}</div>
+        </div>
+        <button class="slot-del" onclick="deleteLocalSlot(event,${i})">🗑</button>
+      </div>`).join('');
+  }
+  document.getElementById('loadOverlay').classList.add('open');
+}
+
+function loadLocalSlot(i){
+  const saves=getSaves();if(!saves[i])return;
+  restoreData(saves[i].data);
+  closeModal('loadOverlay');
+  toast('📱 Loaded: '+saves[i].name);
+}
+
+function deleteLocalSlot(e,i){
+  e.stopPropagation();
+  const saves=getSaves(),name=saves[i].name;
+  saves.splice(i,1);putSaves(saves);
+  openLoadModal();toast('🗑 Deleted: '+name);
+}
+
+// ══════════════════════════════════════════
+// GOOGLE SHEET SAVE / LOAD
+// ══════════════════════════════════════════
+async function saveToSheet() {
+  const url=getScriptUrl();
+  if(!url){toast('⚠️ No Sheet connected');return;}
+  const data=collectData();
+  const code=encodeData(data);
+  // stable ID: facilityName + visitDate, slugified
+  const rawId = ((data.facilityName||'eval')+'-'+(data.visitDate||Date.now()))
+    .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const id = rawId || ('eval-'+Date.now());
+  const btn=document.getElementById('saveCloudBtn');
+  btn.textContent='Saving…';btn.disabled=true;
+  try {
+    const res=await fetch(url,{
+      method:'POST',
+      body:JSON.stringify({
+        action:'save',
+        id,
+        savedAt:new Date().toLocaleString('en-SG'),
+        facilityName:data.facilityName||'(unnamed)',
+        visitorName:data.visitorName||'(unnamed)',
+        rating:data.rating||'-',
+        redFlags:'0',
+        code
+      })
+    });
+    const json=await res.json();
+    if(json.ok){
+      toast(json.updated?'☁️ Updated in Sheet!':'☁️ Saved to Sheet!');
+      // build and show shareable URL
+      const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(id);
+      showShareLink(shareUrl, data.facilityName||'this evaluation');
+    } else {
+      toast('⚠️ Save failed: '+(json.error||'unknown error'));
+    }
+  } catch(e){
+    toast('⚠️ Could not reach Sheet — check your URL');
+  }
+  btn.textContent='☁️ Save to Sheet';btn.disabled=false;
+}
+
+function showShareLink(shareUrl, facilityName) {
+  const box = document.getElementById('shareLinkBox');
+  const input = document.getElementById('shareLinkInput');
+  const label = document.getElementById('shareLinkLabel');
+  if (!box) return;
+  input.value = shareUrl;
+  label.textContent = `Shareable link for "${facilityName}":`;
+  box.style.display = 'block';
+}
+
+function copyShareLink() {
+  const input = document.getElementById('shareLinkInput');
+  if (!input) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(input.value).then(() => toast('🔗 Link copied!'));
+  } else {
+    input.select(); document.execCommand('copy'); toast('🔗 Link copied!');
+  }
+}
+
+async function openCloudModal(){
+  const url=getScriptUrl();
+  if(!url){toast('⚠️ No Sheet connected');return;}
+  document.getElementById('cloudOverlay').classList.add('open');
+  const list=document.getElementById('cloudSlotList');
+  list.innerHTML='<div class="empty-slots">Loading from Google Sheet…</div>';
+  try {
+    const res=await fetch(url+'?action=list');
+    const json=await res.json();
+    if(!json.entries||!json.entries.length){
+      list.innerHTML='<div class="empty-slots">No evaluations saved to the Sheet yet.<br>Tap <strong>Save to Sheet</strong> first.</div>';
+      return;
+    }
+    list.innerHTML=json.entries.map(e=>`
+      <div class="slot-item" onclick="loadFromSheet('${esc(e.id)}')">
+        <div class="slot-info">
+          <div class="slot-name">${esc(e.facilityName)} <span style="font-weight:400;color:var(--text-muted)">· ${esc(e.visitorName)}</span></div>
+          <div class="slot-date">${esc(e.savedAt)} · ${esc(e.rating)} · 🚩${esc(String(e.redFlags))}</div>
+        </div>
+        <button class="slot-del" onclick="deleteFromSheet(event,'${esc(e.id)}')">🗑</button>
+      </div>`).join('');
+  } catch(e){
+    list.innerHTML='<div class="empty-slots">⚠️ Could not load — check your Script URL.</div>';
+  }
+}
+
+async function loadFromSheet(id){
+  const url=getScriptUrl();
+  try {
+    const res=await fetch(`${url}?action=load&id=${encodeURIComponent(id)}`);
+    const json=await res.json();
+    if(json.code){
+      const data=decodeData(json.code);
+      if(data){restoreData(data);closeModal('cloudOverlay');toast('☁️ Loaded from Sheet!');}
+      else toast('⚠️ Could not decode data');
+    } else {
+      toast('⚠️ '+(json.error||'Load failed'));
+    }
+  } catch(e){
+    toast('⚠️ Could not reach Sheet');
+  }
+}
+
+async function deleteFromSheet(e,id){
+  e.stopPropagation();
+  const url=getScriptUrl();
+  try {
+    const res=await fetch(url,{method:'POST',body:JSON.stringify({action:'delete',id})});
+    const json=await res.json();
+    if(json.ok){toast('🗑 Deleted from Sheet');openCloudModal();}
+    else toast('⚠️ Delete failed');
+  } catch{toast('⚠️ Could not reach Sheet');}
+}
+
+// ══════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeModalOutside(e){if(e.target.classList.contains('overlay'))e.target.classList.remove('open');}
+
+// ══════════════════════════════════════════
+// REPORT BUILDER
+// ══════════════════════════════════════════
+function buildReport(){
+  const data=collectData();
+  const P={mandatory:'[MANDATORY]',important:'[IMPORTANT]',none:''};
+  let r='NURSING HOME EVALUATION REPORT\n================================\n\n';
+  r+=`Facility : ${data.facilityName||'(not entered)'}\n`;
+  r+=`Address  : ${data.facilityAddr||'-'}\n`;
+  r+=`Visit    : ${data.visitDate||'(not entered)'}\n`;
+  r+=`Evaluator: ${data.visitorName||'(not entered)'}\n`;
+  r+=`Resident : ${data.patientName||'-'}\n\n`;
+  data.sections.forEach(sec=>{
+    r+=`\n${sec.title}\n${'─'.repeat(sec.title.length)}\n`;
+    sec.items.forEach(item=>{
+      const tick=item.checked?'[✓]':'[ ]';
+      const tag=item.priority!=='none'?` ${P[item.priority]}`:'';
+      r+=`${tick}${tag} ${item.label}\n`;
+      if(item.answer)r+=`    → ${item.answer}\n`;
+    });
+    if(sec.notes)r+=`\nNotes: ${sec.notes}\n`;
+  });
+  r+='\n\nPOST-VISIT SUMMARY\n==================\n';
+  r+=`Home vs institution: ${data.gut.feel||'(not answered)'}\n`;
+  r+=`Picture loved one here: ${data.yn.picture||'(not answered)'}\n`;
+  r+=`Staff response: ${data.gut.staff||'(not answered)'}\n`;
+  r+=`Overall rating: ${data.rating||'(not answered)'}\n`;
+  r+=`Would consider: ${data.yn.consider||'(not answered)'}\n`;
+  r+=`\nKey Notes:\n${data.keyNotes||'-'}\n\n--- End of Report ---\n`;
+  return r;
+}
+
+function submitEmail(){
+  const to=v('submitEmail'),facility=v('facilityName')||'Nursing Home',date=v('visitDate')||'Visit';
+  window.location.href=`mailto:${to}?subject=${encodeURIComponent(`Nursing Home Evaluation – ${facility} – ${date}`)}&body=${encodeURIComponent(buildReport())}`;
+}
+
+function copyReport(){
+  const text=buildReport();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>toast('📋 Report copied!'));
+  } else {
+    const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    toast('📋 Report copied!');
+  }
+}
+
+// ══════════════════════════════════════════
+// TOAST & UTILS
+// ══════════════════════════════════════════
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ══════════════════════════════════════════
+// SHARE LINK HELPERS
+// ══════════════════════════════════════════
+function copySubmitLink() {
+  const input = document.getElementById('submitShareInput');
+  if (!input || !input.value) { toast('⚠️ Save to Sheet first to get a link'); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(input.value).then(() => toast('🔗 Link copied!'));
+  } else {
+    input.select(); document.execCommand('copy'); toast('🔗 Link copied!');
+  }
+}
+
+function showShareLink(shareUrl, facilityName) {
+  // save section share box
+  const box = document.getElementById('shareLinkBox');
+  const input = document.getElementById('shareLinkInput');
+  const label = document.getElementById('shareLinkLabel');
+  if (box) { input.value = shareUrl; label.textContent = `Shareable link for "${facilityName}":`; box.style.display = 'block'; }
+  // submit section share box
+  const submitBox = document.getElementById('submitShareBox');
+  const submitInput = document.getElementById('submitShareInput');
+  const submitNoSheet = document.getElementById('submitNoSheet');
+  if (submitBox) { submitInput.value = shareUrl; submitBox.style.display = 'block'; }
+  if (submitNoSheet) submitNoSheet.style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+// AUTO-LOAD FROM ?id= URL PARAMETER
+// ══════════════════════════════════════════
+async function checkUrlParam() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (!id) return;
+  const url = getScriptUrl();
+  if (!url) {
+    toast('⚠️ Connect your Sheet to load this link');
+    // show setup prompt prominently
+    document.getElementById('scriptUrlWrap').style.display = 'block';
+    document.getElementById('cloudSaveWrap').style.display = 'none';
+    return;
+  }
+  toast('🔄 Loading evaluation from link…');
+  try {
+    const res = await fetch(`${url}?action=load&id=${encodeURIComponent(id)}`);
+    const json = await res.json();
+    if (json.code) {
+      const data = decodeData(json.code);
+      if (data) {
+        restoreData(data);
+        const shareUrl = window.location.origin + window.location.pathname + '?id=' + encodeURIComponent(id);
+        showShareLink(shareUrl, data.facilityName || id);
+        // expand first section so user sees loaded content
+        document.querySelector('.sec-header').click();
+        setTimeout(() => toast('✅ Evaluation loaded from shared link!'), 400);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else { toast('⚠️ Could not decode this link'); }
+    } else { toast('⚠️ Entry not found — it may have been deleted'); }
+  } catch(e) { toast('⚠️ Could not reach Sheet — check your connection'); }
+}
+
+// ── BACK TO TOP ──
+window.addEventListener('scroll', () => {
+  document.getElementById('backToTop').classList.toggle('show', window.scrollY > 300);
+});
+
+// ── INIT ──
+document.getElementById('fAll').className = 'filter-btn active-all';
+checkScriptSetup();
+updateCounters();
+checkUrlParam(); // auto-load if ?id= present in URL
+</script>
+</body>
+</html>
