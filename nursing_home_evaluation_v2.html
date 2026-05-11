@@ -191,7 +191,6 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
   <button class="filter-btn active-all" id="fAll" onclick="setFilter('all')">All items</button>
   <button class="filter-btn" id="fMand" onclick="setFilter('mandatory')">🔴 Mandatory</button>
   <button class="filter-btn" id="fImp" onclick="setFilter('important')">🟡 Important</button>
-  <button class="save-btn-sm" onclick="quickSave()">💾 Save</button>
 </div>
 
 <div class="container">
@@ -205,7 +204,6 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
   </div>
   <div class="field-row"><label class="fl">Facility Name</label><input type="text" id="facilityName" placeholder="e.g. St Joseph's Home"></div>
   <div class="field-row"><label class="fl">Address / Area</label><input type="text" id="facilityAddr" placeholder="e.g. Jurong West"></div>
-  <div class="field-row"><label class="fl">Resident / Patient Name (optional)</label><input type="text" id="patientName" placeholder="For whom is this evaluation?"></div>
 </div>
 
 <!-- ════════════════ SECTIONS ════════════════ -->
@@ -237,7 +235,16 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
   </div>
 
   <div class="check-item" data-priority="mandatory">
-    <input type="checkbox" id="c1_2" onchange="tick()">
+    <input type="checkbox" id="c1_1b" onchange="tick()">
+    <div class="check-label-wrap">
+      <label class="check-label" for="c1_1b">Admission procedure and steps required?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
+      <div class="answer-field"><label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:4px">a) Urgent / emergency admission — what steps and personal belongings needed to bring over, etc?</label><textarea placeholder="e.g. Call admissions hotline, bring IC + referral letter, doctor assessment on same day…" oninput="autoTick('c1_1b',this.value)"></textarea></div>
+      <div class="answer-field"><label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:4px">b) Non-urgent / planned admission — what steps and personal belongings needed to bring over, etc?</label><textarea placeholder="e.g. Submit application form, await assessment appointment, 2-week processing…" oninput="autoTick('c1_1b',this.value)"></textarea></div>
+    </div>
+  </div>
+
+  <div class="check-item" data-priority="mandatory">
     <div class="check-label-wrap">
       <label class="check-label" for="c1_2">Longest length of stay allowed for respite care?</label>
       <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
@@ -248,9 +255,10 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
   <div class="check-item" data-priority="important">
     <input type="checkbox" id="c1_3" onchange="tick()">
     <div class="check-label-wrap">
-      <label class="check-label" for="c1_3">Turnaround time for temporary and long-term admission?</label>
+      <label class="check-label" for="c1_3">Turnaround time for admission?</label>
       <span class="priority-tag tag-important">🟡 Important</span>
-      <div class="answer-field"><input type="text" placeholder="e.g. 2–3 days temp, 2 weeks long-term" oninput="autoTick('c1_3',this.value)"></div>
+      <div class="answer-field"><label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:4px">a) Temporary stay</label><input type="text" placeholder="e.g. 2–3 days" oninput="autoTick('c1_3',this.value)"></div>
+      <div class="answer-field"><label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:4px">b) Long-term stay</label><input type="text" placeholder="e.g. 2 weeks" oninput="autoTick('c1_3',this.value)"></div>
     </div>
   </div>
 
@@ -293,9 +301,10 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
   <div class="check-item" data-priority="important">
     <input type="checkbox" id="c1_7" onchange="tick()">
     <div class="check-label-wrap">
-      <label class="check-label" for="c1_7">Waiting list length for private / non-subsidised room?</label>
+      <label class="check-label" for="c1_7">Waiting list length for non-subsidised room?</label>
       <span class="priority-tag tag-important">🟡 Important</span>
-      <div class="answer-field"><input type="text" placeholder="e.g. 6 months / no waitlist" oninput="autoTick('c1_7',this.value)"></div>
+      <div class="answer-field"><label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:4px">a) Private / single room</label><input type="text" placeholder="e.g. 6 months / no waitlist" oninput="autoTick('c1_7',this.value)"></div>
+      <div class="answer-field"><label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:4px">b) Non-subsidised ward (e.g. 4-bed)</label><input type="text" placeholder="e.g. 3 months / immediate" oninput="autoTick('c1_7',this.value)"></div>
     </div>
   </div>
 
@@ -457,30 +466,6 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
     </div>
   </div>
 
-  <div class="check-item" data-priority="none">
-    <input type="checkbox" id="c2_9" onchange="tick()">
-    <div class="check-label-wrap">
-      <label class="check-label" for="c2_9">Medication protocols documented &amp; double-checked?</label>
-      <div class="yn-answer">
-        <button onclick="ansYN(this,'c2_9','Yes')">Yes</button>
-        <button onclick="ansYN(this,'c2_9','No')">No</button>
-        <button onclick="ansYN(this,'c2_9','Unclear')">Unclear</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="check-item" data-priority="none">
-    <input type="checkbox" id="c2_10" onchange="tick()">
-    <div class="check-label-wrap">
-      <label class="check-label" for="c2_10">Mechanical hoists used for bed-to-wheelchair transfers?</label>
-      <div class="yn-answer">
-        <button onclick="ansYN(this,'c2_10','Yes')">Yes</button>
-        <button onclick="ansYN(this,'c2_10','No — manual')">No — manual</button>
-        <button onclick="ansYN(this,'c2_10','Both available')">Both available</button>
-      </div>
-    </div>
-  </div>
-
   <div class="notes-field"><label>Section Notes</label><textarea id="n2" placeholder="Staff ratio numbers, doctor frequency, equipment confirmed…"></textarea></div>
 </div>
 </div>
@@ -503,19 +488,6 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
       <label class="check-label" for="c3_1">Bathing / shower frequency per day?</label>
       <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
       <div class="answer-field"><input type="text" placeholder="e.g. Once daily, 7am shower" oninput="autoTick('c3_1',this.value)"></div>
-    </div>
-  </div>
-
-  <div class="check-item" data-priority="none">
-    <input type="checkbox" id="c3_2" onchange="tick()">
-    <div class="check-label-wrap">
-      <label class="check-label" for="c3_2">Oral care schedule documented (brushing / denture cleaning)?</label>
-      <div class="yn-answer">
-        <button onclick="ansYN(this,'c3_2','Yes')">Yes</button>
-        <button onclick="ansYN(this,'c3_2','No')">No</button>
-        <button onclick="ansYN(this,'c3_2','Unclear')">Unclear</button>
-      </div>
-      <div class="cond-remark" id="r_c3_2"><input type="text" placeholder="Frequency / schedule…" oninput="autoTick('c3_2',this.value)"></div>
     </div>
   </div>
 
@@ -621,31 +593,6 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
   </div>
 
   <div class="check-item" data-priority="none">
-    <input type="checkbox" id="c4_4" onchange="tick()">
-    <div class="check-label-wrap">
-      <label class="check-label" for="c4_4">Outbreak protocol explained (COVID, flu, GI virus)?</label>
-      <div class="yn-answer">
-        <button onclick="ansYN(this,'c4_4','Yes — clearly')">Yes — clearly</button>
-        <button onclick="ansYN(this,'c4_4','Vague')">Vague</button>
-        <button onclick="ansYN(this,'c4_4','No')">No</button>
-      </div>
-      <div class="cond-remark" id="r_c4_4"><textarea placeholder="Describe protocol…" oninput="autoTick('c4_4',this.value)"></textarea></div>
-    </div>
-  </div>
-
-  <div class="check-item" data-priority="none">
-    <input type="checkbox" id="c4_5" onchange="tick()">
-    <div class="check-label-wrap">
-      <label class="check-label" for="c4_5">Annual flu jab / booster management in place?</label>
-      <div class="yn-answer">
-        <button onclick="ansYN(this,'c4_5','Yes')">Yes</button>
-        <button onclick="ansYN(this,'c4_5','No')">No</button>
-        <button onclick="ansYN(this,'c4_5','Unclear')">Unclear</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="check-item" data-priority="none">
     <input type="checkbox" id="c4_6" onchange="tick()">
     <div class="check-label-wrap">
       <label class="check-label" for="c4_6">Visitor hand-sanitising required; clear unwell-visitor policy?</label>
@@ -709,6 +656,7 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
         <button onclick="ansYN(this,'c5_2','Too cold')">Too cold</button>
         <button onclick="ansYN(this,'c5_2','Poor ventilation')">Poor ventilation</button>
       </div>
+      <div class="answer-field" style="margin-top:6px"><input type="text" placeholder="e.g. Fans only / AC in room / shared corridor AC" oninput="autoTick('c5_2',this.value)"></div>
     </div>
   </div>
 
@@ -1100,15 +1048,25 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
     </div>
   </div>
 
-  <div class="check-item" data-priority="none">
+  <div class="check-item" data-priority="mandatory">
     <input type="checkbox" id="c8_6" onchange="tick()">
     <div class="check-label-wrap">
       <label class="check-label" for="c8_6">Partnership with external hospice provider (HCA / Dover Park)?</label>
+      <span class="priority-tag tag-mandatory">🔴 Mandatory</span>
       <div class="yn-answer">
         <button onclick="ansYN(this,'c8_6','Yes')">Yes</button>
         <button onclick="ansYN(this,'c8_6','No')">No</button>
       </div>
       <div class="answer-field" style="margin-top:6px"><input type="text" placeholder="Which hospice partner(s)?" oninput="autoTick('c8_6',this.value)"></div>
+      <div class="answer-field"><label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:4px;margin-top:8px">During terminal stage — will resident be transferred to hospice or remain in same ward?</label>
+      <div class="yn-answer" style="margin-top:0">
+        <button onclick="ansYN(this,'c8_6b','Stays in same ward')">Stays in same ward</button>
+        <button onclick="ansYN(this,'c8_6b','Transferred to hospice')">Transferred to hospice</button>
+        <button onclick="ansYN(this,'c8_6b','Family choice')">Family choice</button>
+        <button onclick="ansYN(this,'c8_6b','Unclear')">Unclear</button>
+      </div>
+      <input type="text" placeholder="Additional details…" style="margin-top:6px;width:100%;padding:9px 12px;border:1.5px solid var(--gray-border);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:14px" oninput="autoTick('c8_6',this.value)">
+      </div>
     </div>
   </div>
 
@@ -1140,10 +1098,10 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
 
   <div class="gut-q">
     <p>Can you picture your loved one living here?</p>
-    <div class="yn-row">
-      <button class="yn-btn" onclick="selYN(this,'picture','yes','s-teal')">Yes</button>
-      <button class="yn-btn" onclick="selYN(this,'picture','maybe','s-amber')">Maybe</button>
-      <button class="yn-btn" onclick="selYN(this,'picture','no','s-red')">No</button>
+    <div class="btn-row">
+      <button class="sel-btn" onclick="selBtn(this,'picture','yes','s-teal')">✅ Yes</button>
+      <button class="sel-btn" onclick="selBtn(this,'picture','maybe','s-amber')">😐 Maybe</button>
+      <button class="sel-btn" onclick="selBtn(this,'picture','no','s-red')">❌ No</button>
     </div>
   </div>
 
@@ -1195,46 +1153,9 @@ input[type=checkbox]:checked::after{content:'';position:absolute;left:5px;top:2p
       <p style="font-size:12px;color:var(--teal);margin-top:8px;line-height:1.5">📲 Share this link via WhatsApp or email. Anyone who opens it will see this evaluation fully loaded.</p>
     </div>
   </div>
-  <div style="margin-top:10px;border-top:1px solid var(--gray-light);padding-top:10px">
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px">Also save a local backup on this device:</p>
-    <button class="big-btn btn-outline-teal" style="border:1.5px solid var(--teal-mid);font-size:14px;padding:11px" onclick="saveForm()">💾 Save to Device</button>
-    <button class="big-btn btn-outline-teal" style="border:1.5px solid var(--teal-mid);font-size:14px;padding:11px" onclick="openLoadModal()">📱 Load from Device</button>
-  </div>
-</div>
-
-<div class="action-card">
-  <h2>📤 Submit Report</h2>
-  <p class="desc">Share a live link, send by email, or copy as text.</p>
-
-  <div id="submitShareBox" style="display:none;margin-bottom:14px;background:var(--teal-light);border:1.5px solid var(--teal-mid);border-radius:var(--rs);padding:14px">
-    <p style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:8px">🔗 Share this evaluation as a link:</p>
-    <div style="display:flex;gap:8px;align-items:center">
-      <input type="text" id="submitShareInput" readonly style="flex:1;font-size:12px;background:var(--white);padding:9px 11px;border:1.5px solid var(--teal-mid);border-radius:var(--rs);color:var(--text);font-family:monospace">
-      <button onclick="copySubmitLink()" style="flex-shrink:0;padding:9px 14px;background:var(--teal);color:#fff;border:none;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Copy</button>
-    </div>
-    <p style="font-size:12px;color:var(--teal);margin-top:6px">Recipient opens the link → form loads with all your answers.</p>
-  </div>
-  <div id="submitNoSheet" style="display:none" class="warn" style="margin-bottom:12px">
-    💡 Save to Sheet first to get a shareable link.
-  </div>
-
-  <div class="field-row"><label class="fl">Send report to (email)</label><input type="email" id="submitEmail" placeholder="yourname@gmail.com"></div>
-  <button class="big-btn btn-primary" onclick="submitEmail()">📧 Open in Email App</button>
-  <div class="divider">— or —</div>
-  <button class="big-btn btn-outline-teal" style="border:1.5px solid var(--teal-mid);" onclick="copyReport()">📋 Copy Full Report as Text</button>
-  <div class="tip">💡 Paste copied text into Google Docs, WhatsApp or Notes. Fully editable after pasting.</div>
 </div>
 
 </div><!-- /container -->
-
-<!-- LOCAL LOAD MODAL -->
-<div class="overlay" id="loadOverlay" onclick="closeModalOutside(event)">
-  <div class="modal">
-    <h3>📱 Load from Device</h3>
-    <div id="slotList"></div>
-    <button class="modal-close" onclick="closeModal('loadOverlay')">Cancel</button>
-  </div>
-</div>
 
 <!-- CLOUD LOAD MODAL -->
 <div class="overlay" id="cloudOverlay" onclick="closeModalOutside(event)">
@@ -1507,7 +1428,7 @@ function collectData() {
   return {
     visitDate:v('visitDate'),visitorName:v('visitorName'),
     facilityName:v('facilityName'),facilityAddr:v('facilityAddr'),
-    patientName:v('patientName'),sections,gut:{...gut},yn:{...yn},rating,
+    sections,gut:{...gut},yn:{...yn},rating,
     redFlags:'0',keyNotes:v('keyNotes'),
     submitEmail:v('submitEmail'),saveName:v('saveName'),
     savedAt:new Date().toISOString()
@@ -1521,8 +1442,7 @@ function restoreData(d) {
   if(!d)return;
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
   set('visitDate',d.visitDate);set('visitorName',d.visitorName);
-  set('facilityName',d.facilityName);set('facilityAddr',d.facilityAddr);
-  set('patientName',d.patientName);set('redFlags',d.redFlags);
+  set('facilityName',d.facilityName);set('facilityAddr',d.facilityAddr);set('redFlags',d.redFlags);
   set('keyNotes',d.keyNotes);set('submitEmail',d.submitEmail);set('saveName',d.saveName);
   if(d.sections){
     for(let s=1;s<=8;s++){
@@ -1641,9 +1561,14 @@ async function saveToSheet() {
   if(!url){toast('⚠️ No Sheet connected');return;}
   const data=collectData();
   const code=encodeData(data);
-  // stable ID: facilityName + visitDate, slugified
-  const rawId = ((data.facilityName||'eval')+'-'+(data.visitDate||Date.now()))
-    .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  // ID: facilityName + visitDate + visitorName, slugified
+  const parts = [
+    data.facilityName || 'facility',
+    data.visitDate || new Date().toISOString().slice(0,10),
+    data.visitorName || 'visitor'
+  ];
+  const rawId = parts.join('-').toLowerCase()
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const id = rawId || ('eval-'+Date.now());
   const btn=document.getElementById('saveCloudBtn');
   btn.textContent='Saving…';btn.disabled=true;
@@ -1766,8 +1691,7 @@ function buildReport(){
   r+=`Facility : ${data.facilityName||'(not entered)'}\n`;
   r+=`Address  : ${data.facilityAddr||'-'}\n`;
   r+=`Visit    : ${data.visitDate||'(not entered)'}\n`;
-  r+=`Evaluator: ${data.visitorName||'(not entered)'}\n`;
-  r+=`Resident : ${data.patientName||'-'}\n\n`;
+  r+=`Evaluator: ${data.visitorName||'(not entered)'}\n\n`;
   data.sections.forEach(sec=>{
     r+=`\n${sec.title}\n${'─'.repeat(sec.title.length)}\n`;
     sec.items.forEach(item=>{
@@ -1780,10 +1704,9 @@ function buildReport(){
   });
   r+='\n\nPOST-VISIT SUMMARY\n==================\n';
   r+=`Home vs institution: ${data.gut.feel||'(not answered)'}\n`;
-  r+=`Picture loved one here: ${data.yn.picture||'(not answered)'}\n`;
+  r+=`Picture loved one here: ${data.gut.picture||'(not answered)'}\n`;
   r+=`Staff response: ${data.gut.staff||'(not answered)'}\n`;
   r+=`Overall rating: ${data.rating||'(not answered)'}\n`;
-  r+=`Would consider: ${data.yn.consider||'(not answered)'}\n`;
   r+=`\nKey Notes:\n${data.keyNotes||'-'}\n\n--- End of Report ---\n`;
   return r;
 }
