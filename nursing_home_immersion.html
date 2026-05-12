@@ -17,6 +17,12 @@
     --amber:      #c97d2e;
     --amber-pale: #fdf3e3;
     --amber-light:#f5ddb5;
+    --red:        #9b3a3a;
+    --red-pale:   #fdf0f0;
+    --red-light:  #f5c6c6;
+    --blue:       #2d5f8a;
+    --blue-pale:  #eef4fb;
+    --blue-light: #b8d4ee;
     --ink:        #1e2b1f;
     --ink-soft:   #3d4f3e;
     --ink-muted:  #7a8f7b;
@@ -37,6 +43,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* ── HERO ── */
   .hero {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -71,7 +78,7 @@
   .hero-sub {
     color: var(--ink-muted);
     font-size: 15px;
-    max-width: 460px;
+    max-width: 480px;
     margin: 0 auto 1.4rem;
     font-weight: 400;
   }
@@ -99,18 +106,118 @@
   .btn-primary { background: var(--sage); color: #ffffff; }
   .btn-outline  { background: transparent; color: var(--sage); border: 1.5px solid var(--sage-light); }
 
-  .intro-wrap {
+  /* ── CONTENT WRAP ── */
+  .content-wrap {
     max-width: 720px;
     margin: 0 auto;
     padding: 0 1.25rem;
   }
 
+  /* ── PERSONAL STORY CARD ── */
+  .story-card {
+    background: var(--surface);
+    border: 2px solid var(--sage-light);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.6rem;
+    margin: 1.8rem 0 1rem;
+    position: relative;
+  }
+
+  .story-card-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--sage);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+
+  .story-card p {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+  }
+
+  .story-card p:last-child { margin-bottom: 0; }
+
+  .story-card strong { color: var(--ink); font-weight: 700; }
+
+  /* ── TWO SCENARIOS ── */
+  .scenarios {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 1rem 0 0.5rem;
+  }
+
+  .scenario {
+    background: var(--sage-pale);
+    border: 1.5px solid var(--sage-light);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.1rem;
+  }
+
+  .scenario-icon { font-size: 22px; display: block; margin-bottom: 5px; }
+  .scenario-title { font-size: 13.5px; font-weight: 700; color: var(--sage); margin-bottom: 4px; }
+  .scenario-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  /* ── AGE ALERT ── */
+  .age-alert {
+    background: var(--red-pale);
+    border: 1.5px solid var(--red-light);
+    border-radius: var(--radius-md);
+    padding: 1.1rem 1.4rem;
+    margin: 1rem 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .age-alert-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+
+  .age-alert-body { font-size: 14.5px; color: #6b1f1f; line-height: 1.7; }
+
+  .age-alert-body strong { color: var(--red); }
+
+  /* ── MISSION BOX ── */
+  .mission-box {
+    background: var(--blue-pale);
+    border: 1.5px solid var(--blue-light);
+    border-radius: var(--radius-md);
+    padding: 1.1rem 1.4rem;
+    margin: 1rem 0 1.8rem;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .mission-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+
+  .mission-body { font-size: 14.5px; color: #1a3a5c; line-height: 1.7; }
+
+  .mission-body strong { color: var(--blue); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 2px dashed var(--border);
+    margin: 1.5rem 0;
+  }
+
+  /* ── INTRO BANNER ── */
   .intro-banner {
     background: var(--amber-pale);
     border: 1.5px solid var(--amber-light);
     border-radius: var(--radius-md);
     padding: 1.1rem 1.4rem;
-    margin: 1.8rem 0;
+    margin: 0 0 1.8rem;
     font-size: 15px;
     color: #6b3d0e;
     line-height: 1.7;
@@ -121,6 +228,7 @@
 
   .intro-icon { font-size: 22px; line-height: 1; margin-top: 1px; flex-shrink: 0; }
 
+  /* ── MAIN ── */
   main {
     max-width: 720px;
     margin: 0 auto;
@@ -230,6 +338,25 @@
     line-height: 1.65;
   }
 
+  /* ── CHECKLIST LINK ── */
+  .checklist-banner {
+    background: var(--sage);
+    border-radius: var(--radius-md);
+    padding: 1.2rem 1.4rem;
+    margin: 0 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .checklist-banner:hover { opacity: 0.9; }
+  .checklist-banner-icon { font-size: 28px; flex-shrink: 0; }
+  .checklist-banner-text { flex: 1; }
+  .checklist-banner-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .checklist-banner-sub { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.5; }
+  .checklist-banner-arrow { color: rgba(255,255,255,0.7); font-size: 22px; flex-shrink: 0; }
+
   footer {
     border-top: 1px solid var(--border);
     background: var(--surface);
@@ -241,31 +368,77 @@
 
   @media (max-width: 480px) {
     .hero { padding: 2.2rem 1rem 2rem; }
-    main, .intro-wrap { padding-left: 1rem; padding-right: 1rem; }
+    main, .content-wrap { padding-left: 1rem; padding-right: 1rem; }
     .btn-row { flex-direction: column; align-items: center; }
+    .scenarios { grid-template-columns: 1fr; }
+    .story-card { padding: 1.2rem; }
   }
 </style>
 </head>
 <body>
 
 <header class="hero">
-  <div class="hero-badge">🏥 Awareness · Singapore Nursing Homes</div>
-  <h1>What's life really like inside a nursing home?</h1>
-  <p class="hero-sub">Many of us have elderly loved ones — yet few of us truly know what daily life looks like behind those doors. This page shares an eye-opening look at the realities of nursing home living in Singapore, through journalist Anita Kapoor's week-long stay at one.</p>
-  <div class="btn-row">
-    <a class="btn btn-primary" href="https://www.youtube.com/watch?v=PRemfpdpaQU" target="_blank">▶ Watch the Documentary</a>
-    <a class="btn btn-outline" href="https://www.youtube.com/results?search_query=Life+In+A+Nursing+Home+CNA+Insider" target="_blank">◎ Short Recap</a>
-  </div>
+  <div class="hero-badge">💚 Nursing Home</div>
+  <h1>Background Info</h1>
+  <p class="hero-sub">Please take a few minutes to read — it explains the purpose, and what to look out for.</p>
 </header>
 
-<div class="intro-wrap">
+<div class="content-wrap">
+
+  <!-- PERSONAL STORY -->
+  <div class="story-card">
+    <div class="story-card-label">💬 My current condition - for the nursing home to evaluate if I'm eligible to enrol to their home</div>
+    <p>I am 40 years old and living with <strong>Spinal Muscular Atrophy (SMA)</strong> — a condition that affects the muscles needed for movement. I am unable to perform any of the 6 Activities of Daily Living (ADLs) on my own, which means I need assistance with bathing, dressing, feeding, toileting, transferring, and walking. I use a <strong>powered wheelchair</strong> to get around.</p>
+    <p>My mum has been my primary caregiver for many years, and she is getting older. I am planning ahead so that if something happens to her suddenly, there is a safe and dignified place for me to go — without panic, and without waiting.</p>
+    <p>I need your help visiting nursing homes and finding out whether they are suitable. There are two key scenarios I am preparing for:</p>
+
+    <div class="scenarios">
+      <div class="scenario">
+        <span class="scenario-icon">🚨</span>
+        <div class="scenario-title">Urgent Respite Stay</div>
+        <div class="scenario-desc">If my mum falls sick suddenly and cannot care for me, I need a place that can admit me quickly — possibly within the same day.</div>
+      </div>
+      <div class="scenario">
+        <span class="scenario-icon">🏠</span>
+        <div class="scenario-title">Long-Term Stay</div>
+        <div class="scenario-desc">When my mum can no longer provide regular care, I will need a nursing home that can support my needs on an ongoing, permanent basis.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGE ALERT -->
+  <div class="age-alert">
+    <span class="age-alert-icon">⚠️</span>
+    <div class="age-alert-body">
+      <strong>Important Info: Most nursing homes in Singapore only accept elderly residents.</strong> The typical minimum age is 65. As I am only 40+, many facilities may turn me away outright, or accept me only on a case-by-case basis.
+    </div>
+  </div>
+
+  <!-- MISSION BOX -->
+  <div class="mission-box">
+    <span class="mission-icon">🎯</span>
+    <div class="mission-body">
+      <strong>Your mission:</strong> Visit the nursing homes and use the evaluation checklist I've prepared to record what you find out. Look not just at what they say, but what you see and feel. I want to find a home where the conditions are as good as they can be — not just functional, but genuinely liveable. The checklist covers admissions, medical support, hygiene, environment, food, dignity, and end-of-life care. I am especially counting on your honest sensory impressions of each place.
+      <br><br>📋 <a href="https://enabler-sma.github.io/nursinghomeplan/nursing_home_evaluation_v2.html" target="_blank" style="color: var(--blue); font-weight: 700; text-decoration: underline;">Open the Nursing Home Evaluation Checklist →</a>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- WHY THIS MATTERS -->
   <div class="intro-banner">
     <span class="intro-icon">💡</span>
-    <span>Singapore has over 70 nursing homes caring for tens of thousands of elderly residents. Yet most of us have little idea what life inside is really like — until we or someone we love ends up there. CNA journalist Anita Kapoor spent a full week living as a resident to find out. The key moments below are taken from her documentary. Tap any timestamp to jump to that scene.</span>
+    <span>Most people don't know what life inside a nursing home really looks like — until they're already inside one. CNA journalist <strong>Anita Kapoor</strong> spent a full week living as a resident to find out. Her experience, summarised below, shows why choosing the right home matters so much. The key findings are from her documentary. Tap any timestamp to jump to that moment in the video.</span>
   </div>
+
 </div>
 
 <main>
+
+  <div class="btn-row" style="margin-bottom: 1.5rem;">
+    <a class="btn btn-primary" href="https://www.youtube.com/watch?v=PRemfpdpaQU" target="_blank">▶ Watch the Full Documentary</a>
+    <a class="btn btn-outline" href="https://www.youtube.com/results?search_query=Life+In+A+Nursing+Home+CNA+Insider" target="_blank">◎ Short Recap</a>
+  </div>
 
   <div class="section">
     <div class="section-pill">
@@ -334,15 +507,24 @@
 
     <div class="pull-quote">
       <p>Anita concludes that the current system prioritises efficiency and "functionality" over the humanity of residents. Feeding and medication are the focus — quality of life is an afterthought.</p>
-      <blockquote>"They are people — with stories, meaning, and a need for purpose."</blockquote>
-      <p>She advocates for a fundamental shift: from treating the elderly as <em>patients</em> to recognising them as <em>people</em>. <a class="ts" href="https://www.youtube.com/watch?v=PRemfpdpaQU&t=3843s" target="_blank">01:04:03</a></p>
+      <p style="margin-top: 0.9rem; font-style: italic; color: var(--ink-muted); font-size: 14px;">Hopefully we could find a place where I can live comfortably in a condusive environment. Thank you!</p>
     </div>
   </div>
+
+  <!-- CHECKLIST CTA -->
+  <a class="checklist-banner" href="https://enabler-sma.github.io/nursinghomeplan/nursing_home_evaluation_v2.html" target="_blank">
+    <span class="checklist-banner-icon">📋</span>
+    <div class="checklist-banner-text">
+      <div class="checklist-banner-title">Ready to visit? Open the Evaluation Checklist →</div>
+      <div class="checklist-banner-sub">Use this form during your visit to record what you find. It covers all 8 areas — from admission &amp; fees to end-of-life planning. Your notes will be saved and shared with me.</div>
+    </div>
+    <span class="checklist-banner-arrow">›</span>
+  </a>
 
 </main>
 
 <footer>
-  Summary based on Anita Kapoor's documentary "Nursing Home Immersion: A Week Inside" &mdash; CNA Insider &middot; Shared for awareness
+  Prepared with care for a friend's nursing home visits &nbsp;·&nbsp; Documentary: Anita Kapoor, "Nursing Home Immersion: A Week Inside" — CNA Insider &nbsp;·&nbsp; Singapore
 </footer>
 
 </body>
