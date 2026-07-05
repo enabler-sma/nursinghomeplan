@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Nursing Homes Shortlist</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#0F6E56;--teal-mid:#1D9E75;--teal-light:#E1F5EE;--teal-dark:#085041;
+  --amber:#BA7517;--amber-light:#FAEEDA;--amber-mid:#EF9F27;
+  --gray-light:#F1EFE8;--gray-mid:#888780;--gray-border:#D3D1C7;
+  --text:#2C2C2A;--text-muted:#5F5E5A;--bg:#FAFAF8;--white:#fff;
+  --r:12px;--rs:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.6;min-height:100vh;padding-bottom:60px}
+
+/* HEADER */
+header{background:var(--teal);color:#fff;padding:18px 20px 16px;position:sticky;top:0;z-index:200}
+header h1{font-family:'DM Serif Display',serif;font-size:21px;font-weight:400;letter-spacing:-0.3px;margin-bottom:2px}
+header .sub{font-size:12px;opacity:.75;margin-bottom:12px}
+.stat-row{display:flex;gap:8px;flex-wrap:wrap}
+.stat-pill{padding:5px 11px;border-radius:100px;font-size:12px;font-weight:600;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.9)}
+
+.container{max-width:720px;margin:0 auto;padding:16px 14px}
+
+/* GRID — auto-collapses to 1 column as the viewport narrows, no fixed breakpoint needed */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+
+/* CARD */
+.home-card{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+
+/* card tap header */
+.home-header{display:flex;align-items:flex-start;gap:10px;padding:14px 14px 0;cursor:pointer;background:none;border:none;text-align:left;width:100%}
+.home-header:active{opacity:.85}
+.home-icon{width:36px;height:36px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:1px}
+.home-name{font-weight:600;font-size:14px;color:var(--text);line-height:1.35;display:block}
+.home-addr{font-size:11px;color:var(--text-muted);margin-top:3px;line-height:1.4}
+.home-rating{font-size:11px;color:var(--amber);font-weight:600;margin-top:3px;display:flex;align-items:center;gap:3px}
+.home-rating .count{color:var(--gray-mid);font-weight:400}
+
+/* info rows (phone / hours) */
+.info-row{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--text-muted);line-height:1.4}
+.info-row .ico{flex-shrink:0}
+.info-block{display:flex;flex-direction:column;gap:5px}
+
+/* body always visible */
+.home-body{padding:0 14px 14px;margin-top:10px;display:flex;flex-direction:column;flex:1;gap:10px}
+
+/* map */
+.map-frame{width:100%;height:140px;border:0;border-radius:var(--rs);background:var(--gray-light);display:block}
+.map-error{width:100%;height:140px;border-radius:var(--rs);background:var(--gray-light);border:1.5px dashed var(--gray-border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;color:var(--gray-mid);text-align:center}
+.map-error .icon{font-size:22px;opacity:.5}
+
+/* action buttons */
+.btn-row{display:flex;gap:6px}
+.link-btn{flex:1;text-align:center;padding:9px 6px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;text-decoration:none;border:1.5px solid var(--teal-mid);background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;gap:4px}
+.link-btn.website{border-color:var(--amber-mid);background:var(--amber-light);color:var(--amber)}
+
+/* remarks */
+.remarks-box{background:var(--gray-light);border-left:3px solid var(--teal-mid);border-radius:0 var(--rs) var(--rs) 0;padding:10px 11px;flex:1}
+.remarks-lbl{font-size:10px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.remarks-text{font-size:12px;color:var(--text);line-height:1.5}
+
+/* EXPANDED MODAL / DRAWER */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:flex-end;justify-content:center;padding:0}
+.drawer-overlay.open{display:flex}
+.drawer{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:680px;max-height:88vh;overflow-y:auto;padding:0 0 32px}
+.drawer-handle{width:36px;height:4px;background:var(--gray-border);border-radius:2px;margin:12px auto 0}
+.drawer-body{padding:18px 20px}
+.drawer-name{font-family:'DM Serif Display',serif;font-size:20px;color:var(--teal);margin-bottom:4px}
+.drawer-addr{font-size:13px;color:var(--text-muted);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.drawer-rating{font-size:13px;color:var(--amber);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:4px}
+.drawer-rating .count{color:var(--gray-mid);font-weight:400}
+.drawer-info-block{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;background:var(--gray-light);border-radius:var(--rs);padding:12px 14px}
+.drawer-info-row{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text)}
+.drawer-info-row .ico{flex-shrink:0}
+.drawer-info-row a{color:var(--teal);text-decoration:none;font-weight:600}
+.drawer-source-note{font-size:11px;color:var(--gray-mid);text-align:center;margin:-6px 0 14px;font-style:italic}
+.drawer-map{width:100%;height:220px;border:0;border-radius:var(--rs);display:block;background:var(--gray-light);margin-bottom:14px}
+.drawer-btn-row{display:flex;gap:8px;margin-bottom:16px}
+.drawer-btn{flex:1;text-align:center;padding:12px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;text-decoration:none;border:1.5px solid var(--teal-mid);background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;gap:6px}
+.drawer-btn.website{border-color:var(--amber-mid);background:var(--amber-light);color:var(--amber)}
+.drawer-remarks{background:var(--gray-light);border-left:3px solid var(--teal-mid);border-radius:0 var(--rs) var(--rs) 0;padding:12px 14px;margin-bottom:4px}
+.drawer-remarks .lbl{font-size:11px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
+.drawer-remarks p{font-size:14px;color:var(--text);line-height:1.55}
+.drawer-close{display:block;width:calc(100% - 40px);margin:16px 20px 0;padding:13px;background:none;border:1.5px solid var(--gray-border);border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:var(--text-muted);cursor:pointer}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal-dark);color:#fff;padding:11px 20px;border-radius:100px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:all .3s;z-index:999;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* smaller header text on narrow phones (grid layout already responds via auto-fit) */
+@media(max-width:380px){
+  header h1{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="max-width:720px;margin:0 auto">
+    <h1>🏥 Nursing Homes Shortlist</h1>
+    <div class="sub">Homes flagged for closer investigation</div>
+    <div class="stat-row">
+      <div class="stat-pill" id="pillCount">7 homes shortlisted</div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="grid" id="homeGrid"></div>
+</div>
+
+<!-- BOTTOM DRAWER (expanded detail) -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawerOutside(event)">
+  <div class="drawer" id="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-body">
+      <div class="drawer-name" id="dName"></div>
+      <div class="drawer-addr" id="dAddr"></div>
+      <div class="drawer-rating" id="dRating"></div>
+      <iframe class="drawer-map" id="dMap" loading="lazy" src=""></iframe>
+      <div class="drawer-info-block" id="dInfoBlock"></div>
+      <div class="drawer-source-note">📍 Rating, phone &amp; hours pulled from Google Maps · accurate as of 5 Jul 2026</div>
+      <div class="drawer-btn-row">
+        <a class="drawer-btn" id="dDir" href="#" target="_blank" rel="noopener">🧭 Directions</a>
+        <a class="drawer-btn website" id="dWeb" href="#" target="_blank" rel="noopener">🌐 Website</a>
+      </div>
+      <div class="drawer-remarks">
+        <span class="lbl">Remarks</span>
+        <p id="dRemarks"></p>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const homes = [
+  {
+    name:"Allium Care Suites",
+    address:"71 Venus Drive, Singapore 573859",
+    website:"https://www.alliumhealthcare.com/",
+    phone:"+65 6335 0606",
+    rating:4.2, ratingCount:51,
+    hours:["Mon–Sun: 8:30 AM – 6:00 PM"],
+    remarks:"Likely the only top-tier nursing home in SG. Very expensive, which means there should be zero concern about lack of beds for immediate admission, and it's likely to be more accommodating with urgent/special requests. To check: price for non-subsidised vs subsidised ward and the difference in staying arrangements between them."
+  },
+  {
+    name:"Econ Medicare Centre (Choa Chu Kang)",
+    address:"53 Choa Chu Kang Road, Singapore 689385",
+    website:"http://www.econhealthcare.com",
+    phone:"+65 6769 8878",
+    rating:4.4, ratingCount:31,
+    hours:["Mon–Sun: 9:00 AM – 6:00 PM"],
+    remarks:"Private operator with quite a number of branches in SG. Very little info on their website. Curious about their quality of care and fees."
+  },
+  {
+    name:"Kwong Wai Shiu Hospital @ Potong Pasir",
+    address:"51 Potong Pasir Avenue 1, Singapore 358400",
+    website:"https://www.kwsh.org.sg/care-services/nursing-home/",
+    phone:"+65 6856 0000",
+    rating:4.2, ratingCount:30,
+    hours:["Mon–Thu, Sat: 9:00 AM – 6:00 PM","Fri: 12:00 PM – 9:00 PM","Sun: Closed"],
+    remarks:"A non-profit operator. The fee for their non-subsidised ward is not cheap for a non-profit. Want to verify care quality matches the pricing and double-check their non-subsidised fee."
+  },
+  {
+    name:"Orange Valley Nursing Home (Balestier)",
+    address:"363 Balestier Road, Singapore 329784",
+    website:"https://orangevalley.sg/our-nursing-home/locations/balestier/",
+    phone:"+65 6250 6636",
+    rating:4.3, ratingCount:29,
+    hours:[],
+    remarks:"Private operator with quite a number of branches in SG. Curious about their quality of care and fees."
+  },
+  {
+    name:"Precious Homes Pte. Ltd.",
+    address:"6 Lengkok Bahru, Singapore 159051",
+    website:"https://www.precioushomes.sg",
+    phone:"+65 6272 3133",
+    rating:3.9, ratingCount:17,
+    hours:["Mon–Fri: 9:00 AM – 6:00 PM","Sat–Sun: Closed"],
+    remarks:"Another possible option for a private nursing home."
+  },
+  {
+    name:"Senja Care Home",
+    address:"50 Woodlands Road, #01-01, Singapore 677726",
+    website:"https://www.vanguardhealthcare.com.sg/",
+    phone:"+65 6321 6380",
+    rating:3.2, ratingCount:31,
+    hours:["Mon–Sun: 8:30 AM – 6:00 PM"],
+    remarks:"Interesting — government-run nursing home. Not placing high hope on quality given how budget-conscious the government tends to be, but could be a reliable low-cost alternative if funds are tight."
+  },
+  {
+    name:"United Medicare Residence (Tampines West)",
+    address:"10 Tampines Street 96, Singapore 529462",
+    website:"https://www.unitedmedicare.com.sg",
+    phone:"+65 6050 3717",
+    rating:4.4, ratingCount:7,
+    hours:[],
+    remarks:"Private operator with quite a number of branches in SG. Curious about their quality of care and fees."
+  }
+];
+
+function mapEmbedUrl(addr){
+  return `https://maps.google.com/maps?q=${encodeURIComponent(addr)}&output=embed&z=15`;
+}
+function mapDirUrl(addr){
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function renderGrid(){
+  const grid = document.getElementById('homeGrid');
+  grid.innerHTML = homes.map((h,i) => `
+    <div class="home-card" onclick="openDrawer(${i})">
+      <div class="home-header">
+        <div class="home-icon">🏥</div>
+        <div>
+          <span class="home-name">${esc(h.name)}</span>
+          <div class="home-addr">📍 ${esc(h.address)}</div>
+          ${h.rating ? `<div class="home-rating">⭐ ${h.rating.toFixed(1)} <span class="count">(${h.ratingCount})</span></div>` : ''}
+        </div>
+      </div>
+      <div class="home-body">
+        ${h.address
+          ? `<iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${mapEmbedUrl(h.address)}"></iframe>`
+          : `<div class="map-error"><span class="icon">🗺️</span>Map unavailable — no address on file</div>`
+        }
+        <div class="btn-row">
+          <a class="link-btn" href="${mapDirUrl(h.address)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🧭 Directions</a>
+          <a class="link-btn website" href="${esc(h.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🌐 Website</a>
+        </div>
+        <div class="remarks-box">
+          <span class="remarks-lbl">Remarks</span>
+          <div class="remarks-text">${esc(h.remarks)}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openDrawer(i){
+  const h = homes[i];
+  document.getElementById('dName').textContent = h.name;
+  document.getElementById('dAddr').innerHTML = '📍 ' + esc(h.address);
+  document.getElementById('dRating').innerHTML = h.rating
+    ? `⭐ ${h.rating.toFixed(1)} <span class="count">(${h.ratingCount} ratings)</span>` : '';
+  document.getElementById('dMap').src = h.address ? mapEmbedUrl(h.address) : '';
+  document.getElementById('dDir').href = mapDirUrl(h.address);
+  document.getElementById('dWeb').href = h.website;
+  document.getElementById('dRemarks').textContent = h.remarks;
+
+  const infoRows = [];
+  if(h.phone){
+    infoRows.push(`<div class="drawer-info-row"><span class="ico">📞</span><a href="tel:${esc(h.phone.replace(/\s+/g,''))}">${esc(h.phone)}</a></div>`);
+  }
+  if(h.hours && h.hours.length){
+    infoRows.push(`<div class="drawer-info-row"><span class="ico">🕒</span><div>${h.hours.map(esc).join('<br>')}</div></div>`);
+  } else {
+    infoRows.push(`<div class="drawer-info-row"><span class="ico">🕒</span><div style="color:var(--gray-mid)">Hours not listed — call to confirm</div></div>`);
+  }
+  document.getElementById('dInfoBlock').innerHTML = infoRows.join('');
+
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  // clear map src to stop loading
+  setTimeout(()=>document.getElementById('dMap').src='', 300);
+}
+function closeDrawerOutside(e){
+  if(e.target === document.getElementById('drawerOverlay')) closeDrawer();
+}
+
+renderGrid();
+</script>
+</body>
+</html>
